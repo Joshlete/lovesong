@@ -59,11 +59,77 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
       - name: Prepare Laravel
         run: |
           cp .env.example .env
           php artisan key:generate
           php artisan migrate --force
+
+      - name: 🔍 Verify Jetstream Installation
+        run: |
+          echo "🔍 Verifying Jetstream components..."
+          
+          # Check if Jetstream config exists
+          if [ ! -f "config/jetstream.php" ]; then
+            echo "❌ Jetstream config not found"
+            exit 1
+          fi
+          echo "✅ Jetstream config found"
+          
+          # Check if Fortify config exists
+          if [ ! -f "config/fortify.php" ]; then
+            echo "❌ Fortify config not found"
+            exit 1
+          fi
+          echo "✅ Fortify config found"
+          
+          # Check if authentication views exist
+          if [ ! -f "resources/views/auth/login.blade.php" ]; then
+            echo "❌ Login view not found"
+            exit 1
+          fi
+          echo "✅ Login view found"
+          
+          if [ ! -f "resources/views/auth/register.blade.php" ]; then
+            echo "❌ Register view not found"
+            exit 1
+          fi
+          echo "✅ Register view found"
+          
+          # Check if dashboard view exists
+          if [ ! -f "resources/views/dashboard.blade.php" ]; then
+            echo "❌ Dashboard view not found"
+            exit 1
+          fi
+          echo "✅ Dashboard view found"
+          
+          # Check if Jetstream service provider is registered
+          if ! grep -q "JetstreamServiceProvider" bootstrap/providers.php; then
+            echo "❌ JetstreamServiceProvider not registered"
+            exit 1
+          fi
+          echo "✅ JetstreamServiceProvider registered"
+          
+          # Check if Tailwind config exists
+          if [ ! -f "tailwind.config.js" ]; then
+            echo "❌ Tailwind config not found"
+            exit 1
+          fi
+          echo "✅ Tailwind config found"
+          
+          echo "🎉 All Jetstream components verified successfully!"
 
       - name: Run tests
         run: php artisan test
