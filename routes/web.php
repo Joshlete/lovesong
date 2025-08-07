@@ -17,4 +17,6 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    
+    Route::resource('song-requests', \App\Http\Controllers\SongRequestController::class);
 });
