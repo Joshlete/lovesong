@@ -64,4 +64,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the song requests for the user.
+     */
+    public function songRequests()
+    {
+        return $this->hasMany(SongRequest::class);
+    }
 }

@@ -139,24 +139,3 @@ jobs:
         run: |
           echo "✅ Tests completed for branch: ${{ github.ref_name }}"
           echo "🔗 Commit: ${{ github.sha }}"
-
-  deploy:
-    name: 🚀 Deploy to Production
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: 🎯 Production Deployment
-        run: |
-          echo "🚀 Deploying to production..."
-          echo "✅ Branch: ${{ github.ref_name }}"
-          echo "✅ Commit: ${{ github.sha }}"
-          echo "✅ Deployment successful!"
-          # Add your actual deployment commands here:
-          # - Build production assets
-          # - Deploy to server
-          # - Run production migrations
-          # - Clear caches
