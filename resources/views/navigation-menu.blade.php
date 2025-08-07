@@ -15,6 +15,14 @@
                     <x-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link href="{{ route('song-requests.index') }}" :active="request()->routeIs('song-requests.*')">
+                        {{ __('My Requests') }}
+                    </x-nav-link>
+                    @if(auth()->user() && auth()->user()->isAdmin())
+                        <x-nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.*')">
+                            {{ __('Admin') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
