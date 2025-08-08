@@ -80,6 +80,10 @@ class SongRequestTest extends TestCase
             'currency',
             'status',
             'payment_reference',
+            'payment_intent_id',
+            'stripe_checkout_session_id',
+            'payment_status',
+            'payment_completed_at',
             'file_url',
             'delivered_at',
         ];

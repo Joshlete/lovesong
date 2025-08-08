@@ -180,10 +180,15 @@ class PaymentService
     /**
      * Handle successful checkout session
      */
-    public function handleCheckoutSuccess(string $sessionId): bool
+    public function handleCheckoutSuccess(string $sessionId, ?array $sessionData = null): bool
     {
         try {
-            $session = $this->stripe->checkout->sessions->retrieve($sessionId);
+            // Use provided session data from webhook if available, otherwise retrieve from Stripe
+            if ($sessionData) {
+                $session = (object) $sessionData;
+            } else {
+                $session = $this->stripe->checkout->sessions->retrieve($sessionId);
+            }
             
             $songRequest = SongRequest::where('stripe_checkout_session_id', $sessionId)->first();
             
@@ -192,7 +197,13 @@ class PaymentService
                 return false;
             }
 
-            // Retrieve the payment intent from the session
+            // Check if we have a payment intent ID in the session data
+            if (empty($session->payment_intent)) {
+                Log::error('No payment intent found in checkout session', ['session_id' => $sessionId]);
+                return false;
+            }
+
+            // Retrieve the payment intent from Stripe
             $paymentIntent = $this->stripe->paymentIntents->retrieve($session->payment_intent);
 
             $songRequest->update([

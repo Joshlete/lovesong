@@ -83,7 +83,9 @@ class PaymentController extends Controller
             switch ($event['type']) {
                 case 'checkout.session.completed':
                     $session = $event['data']['object'];
-                    $this->paymentService->handleCheckoutSuccess($session['id']);
+                    // Convert Stripe object to array for the service method
+                    $sessionArray = is_array($session) ? $session : $session->toArray();
+                    $this->paymentService->handleCheckoutSuccess($session['id'], $sessionArray);
                     break;
 
                 case 'payment_intent.succeeded':
