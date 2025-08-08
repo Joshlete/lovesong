@@ -70,6 +70,42 @@
                         </div>
                     </div>
 
+                    <!-- Payment Status -->
+                    @if($songRequest->status === 'pending' && $songRequest->payment_status !== 'succeeded')
+                        <div class="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-medium text-orange-900">Payment Required</h3>
+                                    <p class="text-sm text-orange-700">Complete payment to begin work on your custom song.</p>
+                                    <p class="text-lg font-bold text-orange-900 mt-1">Total: ${{ number_format($songRequest->price_usd, 2) }}</p>
+                                </div>
+                                <div>
+                                    <a href="{{ route('payments.show', $songRequest) }}" 
+                                       class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-6 rounded-lg">
+                                        Complete Payment
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @elseif($songRequest->payment_status === 'succeeded')
+                        <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-green-400 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>
+                                    <h3 class="text-lg font-medium text-green-900">Payment Complete</h3>
+                                    <p class="text-sm text-green-700">
+                                        Payment received! Work on your custom song will begin shortly.
+                                        @if($songRequest->payment_completed_at)
+                                            <br><small>Paid: {{ $songRequest->payment_completed_at->format('M j, Y g:i A') }}</small>
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Request Details -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-6">
