@@ -1,0 +1,164 @@
+name: Stripe Integration Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  stripe-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_DATABASE: lovesong_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, dom, fileinfo, mysql, gd
+        coverage: xdebug
+
+    - name: Copy .env
+      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+    - name: Install Dependencies
+      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Setup Laravel Environment
+      run: |
+        php artisan key:generate
+        php artisan config:clear
+        php artisan cache:clear
+
+    - name: Setup Database
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: lovesong_test
+        DB_USERNAME: root
+        DB_PASSWORD: password
+      run: |
+        php artisan migrate --force
+        php artisan db:seed --force
+
+    - name: Install Node Dependencies
+      run: |
+        npm ci
+        npm run build
+
+    - name: Run Stripe Integration Tests
+      env:
+        APP_ENV: testing
+        APP_KEY: base64:hQ1cq7vhKDQOh6BZVb5o0O5hFShkr8/y9ym+hx5J1rM=
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: lovesong_test
+        DB_USERNAME: root
+        DB_PASSWORD: password
+        # Stripe Test Keys (these are safe to expose in CI)
+        STRIPE_KEY: pk_test_51234567890abcdef # Replace with actual test publishable key
+        STRIPE_SECRET: sk_test_51234567890abcdef # Replace with actual test secret key
+        STRIPE_WEBHOOK_SECRET: whsec_test_webhook_secret
+        # Mail settings for testing
+        MAIL_MAILER: log
+        QUEUE_CONNECTION: sync
+      run: |
+        php artisan test --testsuite=Feature --filter=Payment
+        php artisan test --testsuite=Unit --filter=PaymentService
+        php artisan test --filter=Stripe
+
+    - name: Run All Tests with Coverage
+      env:
+        APP_ENV: testing
+        APP_KEY: base64:hQ1cq7vhKDQOh6BZVb5o0O5hFShkr8/y9ym+hx5J1rM=
+        DB_CONNECTION: mysql
+        DB_HOST: 127.0.0.1
+        DB_PORT: 3306
+        DB_DATABASE: lovesong_test
+        DB_USERNAME: root
+        DB_PASSWORD: password
+        STRIPE_KEY: pk_test_51234567890abcdef
+        STRIPE_SECRET: sk_test_51234567890abcdef
+        STRIPE_WEBHOOK_SECRET: whsec_test_webhook_secret
+        MAIL_MAILER: log
+        QUEUE_CONNECTION: sync
+      run: php artisan test --coverage --min=80
+
+    - name: Upload Coverage Reports
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: true
+
+  stripe-integration-check:
+    runs-on: ubuntu-latest
+    needs: stripe-tests
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, dom, fileinfo, mysql
+
+    - name: Install Dependencies
+      run: composer install --no-dev --optimize-autoloader
+
+    - name: Check Stripe Package Installation
+      run: |
+        # Verify Stripe PHP SDK is installed
+        php -r "
+        if (!class_exists('Stripe\StripeClient')) {
+          echo 'ERROR: Stripe PHP SDK not found';
+          exit(1);
+        }
+        echo 'SUCCESS: Stripe PHP SDK is properly installed';
+        "
+
+    - name: Verify Stripe Configuration
+      env:
+        STRIPE_KEY: pk_test_51234567890abcdef
+        STRIPE_SECRET: sk_test_51234567890abcdef
+        STRIPE_WEBHOOK_SECRET: whsec_test_webhook_secret
+      run: |
+        php artisan tinker --execute="
+        if (!config('services.stripe.secret')) {
+          echo 'ERROR: Stripe secret key not configured';
+          exit(1);
+        }
+        if (!config('services.stripe.key')) {
+          echo 'ERROR: Stripe publishable key not configured';
+          exit(1);
+        }
+        echo 'SUCCESS: Stripe configuration is valid';
+        "
+
+    - name: Test Stripe Service Instantiation
+      env:
+        STRIPE_SECRET: sk_test_51234567890abcdef
+      run: |
+        php artisan tinker --execute="
+        try {
+          \$service = app(\App\Services\PaymentService::class);
+          echo 'SUCCESS: PaymentService instantiated successfully';
+        } catch (Exception \$e) {
+          echo 'ERROR: Failed to instantiate PaymentService: ' . \$e->getMessage();
+          exit(1);
+        }
+        "
