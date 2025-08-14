@@ -19,6 +19,15 @@ Route::middleware([
     })->name('dashboard');
     
     Route::resource('song-requests', \App\Http\Controllers\SongRequestController::class);
+    
+    // Payment routes
+    Route::get('song-requests/{song_request}/payment', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.show');
+    Route::post('song-requests/{song_request}/payment-intent', [\App\Http\Controllers\PaymentController::class, 'createPaymentIntent'])->name('payments.create-intent');
+    Route::post('song-requests/{song_request}/test-payment', [\App\Http\Controllers\PaymentController::class, 'testPayment'])->name('payments.test');
+    
+    // Stripe Checkout redirect routes
+    Route::get('song-requests/{song_request}/payment/success', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
+    Route::get('song-requests/{song_request}/payment/cancel', [\App\Http\Controllers\PaymentController::class, 'cancel'])->name('payment.cancel');
 });
 
 // Admin Routes
@@ -35,3 +44,6 @@ Route::middleware([
     Route::resource('song-requests', \App\Http\Controllers\Admin\SongRequestController::class)->except(['create', 'store']);
     Route::patch('song-requests/{song_request}/status', [\App\Http\Controllers\Admin\SongRequestController::class, 'updateStatus'])->name('song-requests.update-status');
 });
+
+// Stripe webhook (no auth required)
+Route::post('/stripe/webhook', [\App\Http\Controllers\PaymentController::class, 'webhook'])->name('stripe.webhook');

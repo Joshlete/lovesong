@@ -46,6 +46,9 @@ jobs:
       DB_USERNAME: testuser
       DB_PASSWORD: testpass
       APP_ENV: testing
+      STRIPE_KEY: ${STRIPE_KEY}
+      STRIPE_SECRET: ${STRIPE_SECRET}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
 
     steps:
       - uses: actions/checkout@v4
@@ -130,6 +133,57 @@ jobs:
           echo "✅ Tailwind config found"
           
           echo "🎉 All Jetstream components verified successfully!"
+
+      - name: 🔍 Verify Stripe Installation
+        run: |
+          echo "🔍 Verifying Stripe components..."
+          
+          # Check if Stripe package is installed
+          if ! composer show stripe/stripe-php > /dev/null 2>&1; then
+            echo "❌ Stripe PHP SDK not installed"
+            exit 1
+          fi
+          echo "✅ Stripe PHP SDK installed"
+          
+          # Check if Stripe service configuration exists
+          if ! php artisan config:show services.stripe > /dev/null 2>&1; then
+            echo "❌ Stripe service configuration not found"
+            exit 1
+          fi
+          echo "✅ Stripe service configuration found"
+          
+          # Verify Stripe test keys are properly set (optional in CI)
+          if [ -z "$STRIPE_KEY" ] || [ -z "$STRIPE_SECRET" ]; then
+            echo "⚠️  Stripe test keys not configured (this is normal in CI environments)"
+          else
+            echo "✅ Stripe test keys configured"
+          fi
+          
+          # Check if PaymentService exists
+          if [ ! -f "app/Services/PaymentService.php" ]; then
+            echo "❌ PaymentService not found"
+            exit 1
+          fi
+          echo "✅ PaymentService found"
+          
+          # Test basic Stripe connectivity (only if keys are available)
+          if [ -n "$STRIPE_SECRET" ] && [ "$STRIPE_SECRET" != "" ]; then
+            php -r "
+              require 'vendor/autoload.php';
+              \Stripe\Stripe::setApiKey('$STRIPE_SECRET');
+              try {
+                \Stripe\Account::retrieve();
+                echo '✅ Stripe API connectivity verified' . PHP_EOL;
+              } catch (Exception \$e) {
+                echo '❌ Stripe API connectivity failed: ' . \$e->getMessage() . PHP_EOL;
+                exit(1);
+              }
+            "
+          else
+            echo "⚠️  Stripe API connectivity test skipped (no secret key available in CI)"
+          fi
+          
+          echo "🎉 All Stripe components verified successfully!"
 
       - name: Run tests
         run: php artisan test

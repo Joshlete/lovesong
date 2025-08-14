@@ -41,6 +41,7 @@ class SongRequestController extends Controller
 
         $validated['user_id'] = Auth::id();
         $validated['status'] = 'pending';
+        $validated['payment_status'] = 'pending';
 
         $songRequest = SongRequest::create($validated);
 
