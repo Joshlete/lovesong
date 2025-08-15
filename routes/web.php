@@ -46,6 +46,3 @@ Route::middleware([
     Route::patch('song-requests/{song_request}/status', [\App\Http\Controllers\Admin\SongRequestController::class, 'updateStatus'])->name('song-requests.update-status');
     Route::get('song-requests/{song_request}/download', [\App\Http\Controllers\Admin\SongRequestController::class, 'download'])->name('song-requests.download');
 });
-
-// Stripe webhook (no auth required)
-Route::post('/stripe/webhook', [\App\Http\Controllers\PaymentController::class, 'webhook'])->name('stripe.webhook');

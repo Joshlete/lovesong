@@ -74,7 +74,7 @@ class StripeWebhookTest extends TestCase
         $signature = $this->generateValidSignature(json_encode($payload));
 
         // Act
-        $response = $this->postJson('/stripe/webhook', $payload, [
+        $response = $this->postJson('/api/stripe/webhook', $payload, [
             'Stripe-Signature' => $signature,
         ]);
 
@@ -155,7 +155,7 @@ class StripeWebhookTest extends TestCase
         $signature = $this->generateValidSignature(json_encode($payload));
 
         // Act
-        $response = $this->postJson('/stripe/webhook', $payload, [
+        $response = $this->postJson('/api/stripe/webhook', $payload, [
             'Stripe-Signature' => $signature,
         ]);
 
@@ -209,7 +209,7 @@ class StripeWebhookTest extends TestCase
         $signature = $this->generateValidSignature(json_encode($payload));
 
         // Act
-        $response = $this->postJson('/stripe/webhook', $payload, [
+        $response = $this->postJson('/api/stripe/webhook', $payload, [
             'Stripe-Signature' => $signature,
         ]);
 
@@ -229,7 +229,7 @@ class StripeWebhookTest extends TestCase
     {
         $payload = ['type' => 'test.event'];
 
-        $response = $this->postJson('/stripe/webhook', $payload, [
+        $response = $this->postJson('/api/stripe/webhook', $payload, [
             'Stripe-Signature' => 'invalid_signature',
         ]);
 
@@ -244,7 +244,7 @@ class StripeWebhookTest extends TestCase
     {
         $payload = ['type' => 'test.event'];
 
-        $response = $this->postJson('/stripe/webhook', $payload);
+        $response = $this->postJson('/api/stripe/webhook', $payload);
 
         $response->assertStatus(400);
         $response->assertJson(['error' => 'Invalid signature']);
@@ -268,7 +268,7 @@ class StripeWebhookTest extends TestCase
             ->once()
             ->with('Received unknown Stripe webhook event', ['type' => 'unknown.event.type']);
 
-        $response = $this->postJson('/stripe/webhook', $payload, [
+        $response = $this->postJson('/api/stripe/webhook', $payload, [
             'Stripe-Signature' => $signature,
         ]);
 
@@ -295,7 +295,7 @@ class StripeWebhookTest extends TestCase
 
         $signature = $this->generateValidSignature(json_encode($payload));
 
-        $response = $this->postJson('/stripe/webhook', $payload, [
+        $response = $this->postJson('/api/stripe/webhook', $payload, [
             'Stripe-Signature' => $signature,
         ]);
 

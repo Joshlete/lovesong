@@ -85,6 +85,9 @@ class SongRequestTest extends TestCase
             'payment_status',
             'payment_completed_at',
             'file_url',
+            'file_path',
+            'file_size',
+            'original_filename',
             'delivered_at',
         ];
 

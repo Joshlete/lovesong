@@ -10,3 +10,6 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/create-payment-intent', [PaymentController::class, 'createPaymentIntent'])
     ->middleware('auth');
+
+// Stripe webhook (no auth or CSRF required)
+Route::post('/stripe/webhook', [PaymentController::class, 'webhook'])->name('stripe.webhook');
