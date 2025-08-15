@@ -46,9 +46,14 @@ jobs:
       DB_USERNAME: testuser
       DB_PASSWORD: testpass
       APP_ENV: testing
-      STRIPE_KEY: ${STRIPE_KEY}
-      STRIPE_SECRET: ${STRIPE_SECRET}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_KEY: ${{ secrets.STRIPE_KEY }}
+      STRIPE_SECRET: ${{ secrets.STRIPE_SECRET }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      # S3 Configuration for testing (optional - test will be skipped if not configured)
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      AWS_BUCKET: ${{ secrets.AWS_BUCKET }}
 
     steps:
       - uses: actions/checkout@v4
@@ -184,6 +189,40 @@ jobs:
           fi
           
           echo "🎉 All Stripe components verified successfully!"
+
+      - name: 🔍 Verify S3 Configuration
+        run: |
+          echo "🔍 Verifying S3 components..."
+          
+          # Check if AWS S3 package is installed
+          if ! composer show league/flysystem-aws-s3-v3 > /dev/null 2>&1; then
+            echo "❌ AWS S3 Flysystem adapter not installed"
+            exit 1
+          fi
+          echo "✅ AWS S3 Flysystem adapter installed"
+          
+          # Check if S3 disk configuration exists
+          if ! php artisan config:show filesystems.disks.s3 > /dev/null 2>&1; then
+            echo "❌ S3 disk configuration not found"
+            exit 1
+          fi
+          echo "✅ S3 disk configuration found"
+          
+          # Check if S3FileService test exists
+          if [ ! -f "tests/Feature/S3ConnectionTest.php" ]; then
+            echo "❌ S3ConnectionTest not found"
+            exit 1
+          fi
+          echo "✅ S3ConnectionTest found"
+          
+          # Verify AWS credentials are available (optional in CI)
+          if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+            echo "⚠️  AWS credentials not configured (S3 tests will be skipped)"
+          else
+            echo "✅ AWS credentials configured"
+          fi
+          
+          echo "🎉 All S3 components verified successfully!"
 
       - name: Run tests
         run: php artisan test
