@@ -171,32 +171,11 @@
                                     $serverLimit = $uploadMax < $postMax ? $uploadMax : $postMax;
                                 @endphp
                                 <p><strong>Current upload limit:</strong> {{ $serverLimit }}</p>
-                                <p class="text-xs text-gray-400">
-                                    Server: upload_max_filesize={{ $uploadMax }}, post_max_size={{ $postMax }}
-                                </p>
+
                                 @if($songRequest->hasS3File())
                                     <p class="text-amber-600">⚠️ Uploading a new file will replace the current one.</p>
                                 @endif
                             </div>
-                        </div>
-
-                        <!-- Legacy File URL (fallback) -->
-                        <div class="border-t pt-6">
-                            <label for="file_url" class="block text-sm font-medium text-gray-700">
-                                🔗 Legacy File URL (optional)
-                            </label>
-                            <input type="url" 
-                                   name="file_url" 
-                                   id="file_url" 
-                                   value="{{ old('file_url', $songRequest->file_url) }}"
-                                   placeholder="https://example.com/song.mp3"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            @error('file_url')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                            <p class="mt-1 text-sm text-gray-500">
-                                Only use this if you can't upload the file directly. S3 uploads are preferred for security.
-                            </p>
                         </div>
 
                         <!-- Delivered At -->

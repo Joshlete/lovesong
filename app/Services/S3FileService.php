@@ -30,11 +30,17 @@ class S3FileService
     /**
      * Generate a secure download URL for a song
      */
-    public function getDownloadUrl(string $filePath, int $expirationMinutes = 60): string
+    public function getDownloadUrl(string $filePath, int $expirationMinutes = 60, ?string $downloadFilename = null): string
     {
+        $filename = $downloadFilename ?: basename($filePath);
+        
         return Storage::disk('s3')->temporaryUrl(
             $filePath,
-            now()->addMinutes($expirationMinutes)
+            now()->addMinutes($expirationMinutes),
+            [
+                'ResponseContentDisposition' => 'attachment; filename="' . $filename . '"',
+                'ResponseContentType' => 'application/octet-stream'
+            ]
         );
     }
 

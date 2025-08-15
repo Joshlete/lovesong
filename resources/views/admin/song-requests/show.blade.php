@@ -156,18 +156,7 @@
                                     </div>
                                     @endif
 
-                                    @if($songRequest->file_url)
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            File URL
-                                        </label>
-                                        <a href="{{ $songRequest->file_url }}" 
-                                           target="_blank"
-                                           class="text-indigo-600 hover:text-indigo-900 text-sm break-all">
-                                            {{ $songRequest->file_url }}
-                                        </a>
-                                    </div>
-                                    @endif
+
                                 </div>
                             </div>
 

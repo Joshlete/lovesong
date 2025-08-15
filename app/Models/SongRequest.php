@@ -48,16 +48,20 @@ class SongRequest extends Model
     }
 
     /**
-     * Get the secure download URL for the song file
+     * Generate a fresh download URL for the song file (short expiration for immediate use)
      */
-    public function getDownloadUrlAttribute(): ?string
+    public function generateFreshDownloadUrl(): ?string
     {
         if (!$this->file_path) {
             return null;
         }
 
         $s3Service = app(S3FileService::class);
-        return $s3Service->getDownloadUrl($this->file_path, 60); // 1 hour expiry
+        
+        // Use original filename if available, otherwise use the stored filename
+        $downloadFilename = $this->original_filename ?: $this->getDisplayFilename();
+        
+        return $s3Service->getDownloadUrl($this->file_path, 5, $downloadFilename); // 5 minutes - just for the immediate download
     }
 
     /**
@@ -69,19 +73,11 @@ class SongRequest extends Model
     }
 
     /**
-     * Check if the song has any file (S3 or legacy URL)
+     * Check if the song has a file
      */
     public function hasFile(): bool
     {
-        return $this->hasS3File() || !empty($this->file_url);
-    }
-
-    /**
-     * Get the primary download method (S3 or legacy URL)
-     */
-    public function getDownloadMethod(): string
-    {
-        return $this->hasS3File() ? 's3' : ($this->file_url ? 'url' : 'none');
+        return $this->hasS3File();
     }
 
     /**

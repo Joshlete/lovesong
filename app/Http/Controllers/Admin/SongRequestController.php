@@ -71,7 +71,6 @@ class SongRequestController extends Controller
         $validated = $request->validate([
             'status' => 'required|in:pending,in_progress,completed,cancelled',
             'payment_reference' => 'nullable|string|max:255',
-            'file_url' => 'nullable|url',
             'song_file' => [
                 'nullable',
                 'file',
@@ -96,9 +95,6 @@ class SongRequestController extends Controller
                 $validated['file_path'] = $filePath;
                 $validated['file_size'] = $file->getSize();
                 $validated['original_filename'] = $file->getClientOriginalName();
-                
-                // Clear the old file_url since we're using S3 now
-                $validated['file_url'] = null;
                 
                 // Automatically mark as completed when file is uploaded
                 $validated['status'] = 'completed';
@@ -192,7 +188,9 @@ class SongRequestController extends Controller
             abort(404, 'File not found in storage');
         }
 
-        return redirect($songRequest->download_url);
+        // Generate a fresh download URL on demand
+        $freshUrl = $songRequest->generateFreshDownloadUrl();
+        return redirect($freshUrl);
     }
 
     /**

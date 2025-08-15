@@ -96,7 +96,7 @@
                                 <div>
                                     <h3 class="text-lg font-medium text-green-900">Payment Complete</h3>
                                     <p class="text-sm text-green-700">
-                                        Payment received! Work on your custom song will begin shortly.
+                                        Payment received!
                                         @if($songRequest->payment_completed_at)
                                             <br><small>Paid: {{ $songRequest->payment_completed_at->format('M j, Y g:i A') }}</small>
                                         @endif
@@ -226,6 +226,7 @@
                              
                              <div class="flex flex-col sm:flex-row gap-3">
                                  <a href="{{ route('song-requests.download', $songRequest) }}" 
+                                    download
                                     class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
                                      <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -238,7 +239,7 @@
                                          <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                          </svg>
-                                         Secure download link (expires in 1 hour)
+                                         Secure download
                                      </div>
                                  @endif
                              </div>

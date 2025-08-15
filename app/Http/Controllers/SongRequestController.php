@@ -147,7 +147,7 @@ class SongRequestController extends Controller
             abort(403, 'Song is not yet completed');
         }
 
-        // Check for S3 file first
+        // Check for S3 file
         if ($songRequest->hasS3File()) {
             $s3Service = app(\App\Services\S3FileService::class);
             
@@ -155,12 +155,9 @@ class SongRequestController extends Controller
                 abort(404, 'File not found in storage');
             }
 
-            return redirect($songRequest->download_url);
-        }
-
-        // Fallback to legacy file_url
-        if ($songRequest->file_url) {
-            return redirect($songRequest->file_url);
+            // Generate a fresh download URL on demand
+            $freshUrl = $songRequest->generateFreshDownloadUrl();
+            return redirect($freshUrl);
         }
 
         abort(404, 'No file available for download');
