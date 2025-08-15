@@ -11,11 +11,42 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentService
 {
-    private StripeClient $stripe;
+    private ?StripeClient $stripe = null;
 
     public function __construct()
     {
-        $this->stripe = new StripeClient(config('services.stripe.secret'));
+        // Don't validate in constructor to prevent crashes
+        // Instead validate when methods are called
+        if ($this->isConfigured()) {
+            $this->stripe = new StripeClient(config('services.stripe.secret'));
+        }
+    }
+
+    /**
+     * Validate that Stripe is properly configured
+     */
+    private function validateStripeConfiguration(): void
+    {
+        if (empty(config('services.stripe.secret'))) {
+            throw new \Exception('Stripe secret key is not configured. Please contact support.');
+        }
+
+        if (empty(config('services.stripe.key'))) {
+            throw new \Exception('Stripe publishable key is not configured. Please contact support.');
+        }
+    }
+
+    /**
+     * Check if Stripe is properly configured
+     */
+    public function isConfigured(): bool
+    {
+        try {
+            $this->validateStripeConfiguration();
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -23,6 +54,13 @@ class PaymentService
      */
     public function createPaymentIntent(SongRequest $songRequest): array
     {
+        if (!$this->isConfigured()) {
+            return [
+                'success' => false,
+                'error' => 'Payment system is temporarily unavailable. Please contact support.',
+            ];
+        }
+
         try {
             $paymentIntent = $this->stripe->paymentIntents->create([
                 'amount' => $this->convertToStripeAmount($songRequest->price_usd),
@@ -127,6 +165,13 @@ class PaymentService
      */
     public function createCheckoutSession(SongRequest $songRequest): array
     {
+        if (!$this->isConfigured()) {
+            return [
+                'success' => false,
+                'error' => 'Payment system is temporarily unavailable. Please contact support.',
+            ];
+        }
+
         try {
             $session = $this->stripe->checkout->sessions->create([
                 'payment_method_types' => ['card'],

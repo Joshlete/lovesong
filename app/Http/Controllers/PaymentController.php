@@ -142,6 +142,22 @@ class PaymentController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Check if Stripe is configured
+        try {
+            if (!$this->paymentService->isConfigured()) {
+                return redirect()->route('song-requests.show', $songRequest)
+                    ->with('error', 'Payment system is temporarily unavailable. Please contact support.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Payment configuration check failed', [
+                'song_request_id' => $songRequest->id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return redirect()->route('song-requests.show', $songRequest)
+                ->with('error', 'Payment system is temporarily unavailable. Please contact support.');
+        }
+
         return view('payments.show', compact('songRequest'));
     }
 

@@ -27,6 +27,16 @@ class PaymentPage extends Component
         if ($this->songRequest->payment_status === 'succeeded') {
             $this->paymentSuccess = true;
         }
+
+        // Check if Stripe is configured
+        try {
+            $paymentService = app(PaymentService::class);
+            if (!$paymentService->isConfigured()) {
+                $this->paymentError = 'Payment system is temporarily unavailable. Please contact support.';
+            }
+        } catch (\Exception $e) {
+            $this->paymentError = 'Payment system is temporarily unavailable. Please contact support.';
+        }
     }
 
     public function processPayment()
@@ -36,6 +46,14 @@ class PaymentPage extends Component
 
         try {
             $paymentService = app(PaymentService::class);
+            
+            // Check if Stripe is configured before attempting payment
+            if (!$paymentService->isConfigured()) {
+                $this->paymentError = 'Payment system is temporarily unavailable. Please contact support.';
+                $this->paymentProcessing = false;
+                return;
+            }
+
             $result = $paymentService->createCheckoutSession($this->songRequest);
 
             if ($result['success']) {
@@ -45,7 +63,15 @@ class PaymentPage extends Component
                 $this->paymentError = $result['error'] ?? 'Failed to create checkout session';
             }
         } catch (\Exception $e) {
-            $this->paymentError = 'Payment processing error: ' . $e->getMessage();
+            // Log the actual error for developers
+            \Illuminate\Support\Facades\Log::error('Payment processing error', [
+                'song_request_id' => $this->songRequest->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // Show user-friendly error
+            $this->paymentError = 'Payment system is temporarily unavailable. Please contact support.';
         }
 
         $this->paymentProcessing = false;
