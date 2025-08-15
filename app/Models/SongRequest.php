@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\S3FileService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,6 +26,9 @@ class SongRequest extends Model
         'payment_status',
         'payment_completed_at',
         'file_url',
+        'file_path',
+        'file_size',
+        'original_filename',
         'delivered_at',
     ];
 
@@ -32,6 +36,7 @@ class SongRequest extends Model
         'delivered_at' => 'datetime',
         'payment_completed_at' => 'datetime',
         'price_usd'    => 'decimal:2',
+        'file_size'    => 'integer',
     ];
 
     /**
@@ -40,5 +45,90 @@ class SongRequest extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the secure download URL for the song file
+     */
+    public function getDownloadUrlAttribute(): ?string
+    {
+        if (!$this->file_path) {
+            return null;
+        }
+
+        $s3Service = app(S3FileService::class);
+        return $s3Service->getDownloadUrl($this->file_path, 60); // 1 hour expiry
+    }
+
+    /**
+     * Check if the song has a file uploaded to S3
+     */
+    public function hasS3File(): bool
+    {
+        return !empty($this->file_path);
+    }
+
+    /**
+     * Check if the song has any file (S3 or legacy URL)
+     */
+    public function hasFile(): bool
+    {
+        return $this->hasS3File() || !empty($this->file_url);
+    }
+
+    /**
+     * Get the primary download method (S3 or legacy URL)
+     */
+    public function getDownloadMethod(): string
+    {
+        return $this->hasS3File() ? 's3' : ($this->file_url ? 'url' : 'none');
+    }
+
+    /**
+     * Get formatted file size
+     */
+    public function getFormattedFileSizeAttribute(): ?string
+    {
+        if (!$this->file_size) {
+            return null;
+        }
+
+        $bytes = $this->file_size;
+        $units = ['B', 'KB', 'MB', 'GB'];
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    /**
+     * Get the display filename for the user
+     */
+    public function getDisplayFilename(): ?string
+    {
+        if ($this->original_filename) {
+            return $this->original_filename;
+        }
+
+        if ($this->file_path) {
+            return basename($this->file_path);
+        }
+
+        return null;
+    }
+
+    /**
+     * Delete the S3 file when the song request is deleted
+     */
+    protected static function booted()
+    {
+        static::deleting(function ($songRequest) {
+            if ($songRequest->file_path) {
+                $s3Service = app(S3FileService::class);
+                $s3Service->deleteSong($songRequest->file_path);
+            }
+        });
     }
 }

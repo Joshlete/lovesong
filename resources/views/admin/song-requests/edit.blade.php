@@ -30,7 +30,7 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('admin.song-requests.update', $songRequest) }}" class="space-y-6">
+                    <form method="POST" action="{{ route('admin.song-requests.update', $songRequest) }}" class="space-y-6" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -120,10 +120,70 @@
                             @enderror
                         </div>
 
-                        <!-- File URL -->
-                        <div>
+                        <!-- Song File Upload -->
+                        <div class="mb-6">
+                            <label for="song_file" class="block text-sm font-medium text-gray-700 mb-2">
+                                🎵 Upload Song File
+                            </label>
+                            
+                            @if($songRequest->hasS3File())
+                                <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-green-800">
+                                                ✅ Current File: {{ $songRequest->getDisplayFilename() }}
+                                            </p>
+                                            <p class="text-sm text-green-600">
+                                                Size: {{ $songRequest->formatted_file_size }} • 
+                                                Uploaded: {{ $songRequest->updated_at->format('M j, Y g:i A') }}
+                                            </p>
+                                        </div>
+                                        <a href="{{ route('admin.song-requests.download', $songRequest) }}" 
+                                           class="text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded transition">
+                                            Download
+                                        </a>
+                                    </div>
+                                </div>
+                            @endif
+                            
+                            <input type="file" 
+                                   name="song_file" 
+                                   id="song_file"
+                                   accept=".mp3,.wav,.m4a,.aac,.ogg,.flac"
+                                   class="block w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-md file:border-0
+                                          file:text-sm file:font-medium
+                                          file:bg-indigo-50 file:text-indigo-700
+                                          hover:file:bg-indigo-100
+                                          focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            
+                            @error('song_file')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                            
+                            <div class="mt-2 text-sm text-gray-500">
+                                <p><strong>✨ Pro tip:</strong> Uploading a file will automatically mark the request as "completed"!</p>
+                                <p>Accepted formats: MP3, WAV, M4A, AAC, OGG, FLAC</p>
+                                @php
+                                    $uploadMax = ini_get('upload_max_filesize');
+                                    $postMax = ini_get('post_max_size');
+                                    $serverLimit = $uploadMax < $postMax ? $uploadMax : $postMax;
+                                @endphp
+                                <p><strong>Current upload limit:</strong> {{ $serverLimit }}</p>
+                                <p class="text-xs text-gray-400">
+                                    Server: upload_max_filesize={{ $uploadMax }}, post_max_size={{ $postMax }}
+                                </p>
+                                @if($songRequest->hasS3File())
+                                    <p class="text-amber-600">⚠️ Uploading a new file will replace the current one.</p>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Legacy File URL (fallback) -->
+                        <div class="border-t pt-6">
                             <label for="file_url" class="block text-sm font-medium text-gray-700">
-                                Song File URL
+                                🔗 Legacy File URL (optional)
                             </label>
                             <input type="url" 
                                    name="file_url" 
@@ -135,7 +195,7 @@
                                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                             @enderror
                             <p class="mt-1 text-sm text-gray-500">
-                                This URL will be provided to the customer for downloading their song.
+                                Only use this if you can't upload the file directly. S3 uploads are preferred for security.
                             </p>
                         </div>
 
