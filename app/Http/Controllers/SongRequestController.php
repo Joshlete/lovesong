@@ -132,4 +132,34 @@ class SongRequestController extends Controller
         return redirect()->route('song-requests.index')
             ->with('success', 'Song request deleted successfully!');
     }
+
+    /**
+     * Download song file for the user
+     */
+    public function download(SongRequest $songRequest)
+    {
+        // Ensure user can only download their own completed songs
+        if ($songRequest->user_id !== Auth::id()) {
+            abort(404);
+        }
+
+        if ($songRequest->status !== 'completed') {
+            abort(403, 'Song is not yet completed');
+        }
+
+        // Check for S3 file
+        if ($songRequest->hasS3File()) {
+            $s3Service = app(\App\Services\S3FileService::class);
+            
+            if (!$s3Service->songExists($songRequest->file_path)) {
+                abort(404, 'File not found in storage');
+            }
+
+            // Generate a fresh download URL on demand
+            $freshUrl = $songRequest->generateFreshDownloadUrl();
+            return redirect($freshUrl);
+        }
+
+        abort(404, 'No file available for download');
+    }
 }
