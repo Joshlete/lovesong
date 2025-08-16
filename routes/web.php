@@ -44,4 +44,8 @@ Route::middleware([
     Route::resource('song-requests', \App\Http\Controllers\Admin\SongRequestController::class)->except(['create', 'store']);
     Route::patch('song-requests/{song_request}/status', [\App\Http\Controllers\Admin\SongRequestController::class, 'updateStatus'])->name('song-requests.update-status');
     Route::get('song-requests/{song_request}/download', [\App\Http\Controllers\Admin\SongRequestController::class, 'download'])->name('song-requests.download');
+    
+    Route::get('settings', function () {
+        return view('admin.settings');
+    })->name('settings');
 });
