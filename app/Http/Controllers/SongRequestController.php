@@ -44,8 +44,14 @@ class SongRequestController extends Controller
 
         $songRequest = SongRequest::create($validated);
 
+        // Auto-send verification email if user isn't verified yet
+        $user = Auth::user();
+        if (!$user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+        }
+
         return redirect()->route('song-requests.show', $songRequest)
-            ->with('success', 'Song request created successfully!');
+            ->with('success', 'Song request created successfully!' . (!$user->hasVerifiedEmail() ? ' We\'ve sent a verification email to complete your order.' : ''));
     }
 
     /**

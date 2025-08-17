@@ -17,10 +17,10 @@ Route::get('/register', function () {
 
 Route::get('/ping', fn () => 'pong');
 
+// Routes that don't require email verification (dashboard, song creation)
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified',
 ])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -28,7 +28,14 @@ Route::middleware([
 
     Route::resource('song-requests', \App\Http\Controllers\SongRequestController::class);
     Route::get('song-requests/{song_request}/download', [\App\Http\Controllers\SongRequestController::class, 'download'])->name('song-requests.download');
+});
 
+// Routes that require email verification (payments)
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
     // Payment routes
     Route::get('song-requests/{song_request}/payment', [\App\Http\Controllers\PaymentController::class, 'show'])->name('payments.show');
     Route::post('song-requests/{song_request}/payment-intent', [\App\Http\Controllers\PaymentController::class, 'createPaymentIntent'])->name('payments.create-intent');

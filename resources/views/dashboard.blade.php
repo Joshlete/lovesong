@@ -7,6 +7,44 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Email Verification Banner -->
+            @if (!auth()->user()->hasVerifiedEmail())
+                <div class="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg shadow-lg p-6 relative overflow-hidden">
+                    <!-- Animated background pattern -->
+                    <div class="absolute inset-0 opacity-10">
+                        <div class="absolute top-0 left-0 w-20 h-20 bg-white rounded-full transform -translate-x-10 -translate-y-10"></div>
+                        <div class="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full transform translate-x-16 translate-y-16"></div>
+                    </div>
+                    
+                    <div class="relative flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center w-12 h-12 bg-white/20 rounded-full">
+                                <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M2.94 6.412A2 2 0 002 8.108V16a2 2 0 002 2h12a2 2 0 002-2V8.108a2 2 0 00-.94-1.696l-6-3.75a2 2 0 00-2.12 0l-6 3.75zm3.56 2.123L8 7.383V5a1 1 0 112 0v2.383l1.5 1.152a1 1 0 01.5.865V12a1 1 0 11-2 0V9.4L8 8.35 6 9.4V12a1 1 0 11-2 0V9.4a1 1 0 01.5-.865z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-lg font-semibold text-white">📧 Verify Your Email to Complete Orders</h3>
+                            <p class="text-white/90 text-sm mt-1">You can create song requests, but you'll need to verify your email before making any payments.</p>
+                            
+                            <div class="mt-3 flex items-center space-x-3">
+                                @livewire('resend-verification-button', ['variant' => 'banner'])
+                                
+                                <a href="{{ route('verification.notice') }}" class="text-white underline text-sm hover:text-white/80 flex items-center transition">
+                                    Learn More →
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="ml-4">
+                            <span class="text-2xl">🎵</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Quick Actions -->
             <div class="mb-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">

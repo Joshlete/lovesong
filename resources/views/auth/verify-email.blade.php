@@ -42,16 +42,8 @@
 
     <!-- Actions -->
     <div class="space-y-4">
-        <!-- Resend Email -->
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
-            <button 
-                type="submit"
-                class="w-full bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl hover:from-purple-700 hover:to-pink-600 transform hover:scale-[1.02] transition shadow-lg"
-            >
-                Resend Verification Email 📨
-            </button>
-        </form>
+        <!-- Resend Email Component -->
+        @livewire('resend-verification-button')
 
         <!-- Secondary Actions -->
         <div class="flex space-x-3">
