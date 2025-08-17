@@ -24,6 +24,11 @@ class S3FileService
             'private' // Private visibility for security
         );
 
+        // Check if upload was successful
+        if ($path === false) {
+            throw new \Exception('Failed to upload file to S3. Please check AWS credentials and bucket configuration.');
+        }
+
         return $path;
     }
 

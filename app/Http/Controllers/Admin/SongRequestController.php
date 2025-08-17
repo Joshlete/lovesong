@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SongRequest;
 use App\Services\S3FileService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SongRequestController extends Controller
 {
@@ -28,14 +29,14 @@ class SongRequestController extends Controller
         // Filter by user
         if ($request->filled('user')) {
             $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->user . '%')
-                  ->orWhere('email', 'like', '%' . $request->user . '%');
+                $q->where('name', 'like', '%'.$request->user.'%')
+                    ->orWhere('email', 'like', '%'.$request->user.'%');
             });
         }
 
         // Search by recipient name
         if ($request->filled('search')) {
-            $query->where('recipient_name', 'like', '%' . $request->search . '%');
+            $query->where('recipient_name', 'like', '%'.$request->search.'%');
         }
 
         $songRequests = $query->latest()->paginate(10);
@@ -49,7 +50,7 @@ class SongRequestController extends Controller
     public function show(SongRequest $songRequest)
     {
         $songRequest->load('user');
-        
+
         return view('admin.song-requests.show', compact('songRequest'));
     }
 
@@ -59,7 +60,7 @@ class SongRequestController extends Controller
     public function edit(SongRequest $songRequest)
     {
         $songRequest->load('user');
-        
+
         return view('admin.song-requests.edit', compact('songRequest'));
     }
 
@@ -74,8 +75,8 @@ class SongRequestController extends Controller
             'song_file' => [
                 'nullable',
                 'file',
-                'max:' . ($this->getMaxAllowedUploadSize() / 1024), // Convert to KB for Laravel validation
-                'mimes:' . implode(',', $this->s3Service->getAllowedExtensions())
+                'max:'.($this->getMaxAllowedUploadSize() / 1024), // Convert to KB for Laravel validation
+                'mimes:'.implode(',', $this->s3Service->getAllowedExtensions()),
             ],
             'delivered_at' => 'nullable|date',
         ]);
@@ -91,31 +92,31 @@ class SongRequestController extends Controller
                 // Upload new file to S3
                 $file = $request->file('song_file');
                 $filePath = $this->s3Service->uploadSong($file, $songRequest->id);
-                
+
                 $validated['file_path'] = $filePath;
                 $validated['file_size'] = $file->getSize();
                 $validated['original_filename'] = $file->getClientOriginalName();
-                
+
                 // Automatically mark as completed when file is uploaded
                 $validated['status'] = 'completed';
-                
+
             } catch (\Exception $e) {
-                \Log::error('S3 file upload failed', [
+                Log::error('S3 file upload failed', [
                     'song_request_id' => $songRequest->id,
                     'file_name' => $request->file('song_file')->getClientOriginalName(),
                     'file_size' => $request->file('song_file')->getSize(),
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    'trace' => $e->getTraceAsString(),
                 ]);
-                
+
                 return redirect()->back()
                     ->withInput()
-                    ->withErrors(['song_file' => 'The song file failed to upload: ' . $e->getMessage()]);
+                    ->withErrors(['song_file' => 'The song file failed to upload: '.$e->getMessage()]);
             }
         }
 
         // Auto-set delivered_at when status changes to completed
-        if ($validated['status'] === 'completed' && !$validated['delivered_at']) {
+        if ($validated['status'] === 'completed' && ! $validated['delivered_at']) {
             $validated['delivered_at'] = now();
         }
 
@@ -180,16 +181,17 @@ class SongRequestController extends Controller
      */
     public function download(SongRequest $songRequest)
     {
-        if (!$songRequest->hasS3File()) {
+        if (! $songRequest->hasS3File()) {
             abort(404, 'No file available for download');
         }
 
-        if (!$this->s3Service->songExists($songRequest->file_path)) {
+        if (! $this->s3Service->songExists($songRequest->file_path)) {
             abort(404, 'File not found in storage');
         }
 
         // Generate a fresh download URL on demand
         $freshUrl = $songRequest->generateFreshDownloadUrl();
+
         return redirect($freshUrl);
     }
 
@@ -202,7 +204,7 @@ class SongRequestController extends Controller
     {
         $appMaxSize = $this->s3Service->getMaxFileSize(); // Our application limit (50MB)
         $phpMaxSize = $this->getPhpUploadLimit();         // Server's PHP limit
-        
+
         // Use whichever is smaller to prevent upload failures
         return min($appMaxSize, $phpMaxSize);
     }
@@ -214,7 +216,7 @@ class SongRequestController extends Controller
     {
         $uploadMax = $this->parseIniValue(ini_get('upload_max_filesize'));
         $postMax = $this->parseIniValue(ini_get('post_max_size'));
-        
+
         // Return the most restrictive limit
         return min($uploadMax, $postMax);
     }
@@ -227,7 +229,7 @@ class SongRequestController extends Controller
         $value = trim($value);
         $last = strtolower(substr($value, -1));
         $number = (int) substr($value, 0, -1);
-        
+
         switch ($last) {
             case 'g':
                 return $number * 1024 * 1024 * 1024;

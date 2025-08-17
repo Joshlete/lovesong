@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Setting;
 use App\Services\S3FileService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,6 +39,8 @@ class SongRequest extends Model
         'price_usd'    => 'decimal:2',
         'file_size'    => 'integer',
     ];
+
+
 
     /**
      * Get the user that owns the song request.
@@ -116,10 +119,18 @@ class SongRequest extends Model
     }
 
     /**
-     * Delete the S3 file when the song request is deleted
+     * Boot the model
      */
     protected static function booted()
     {
+        // Automatically set price from admin settings when creating new requests
+        static::creating(function ($songRequest) {
+            if (empty($songRequest->price_usd)) {
+                $songRequest->price_usd = Setting::getSongPrice();
+            }
+        });
+
+        // Delete the S3 file when the song request is deleted
         static::deleting(function ($songRequest) {
             if ($songRequest->file_path) {
                 $s3Service = app(S3FileService::class);

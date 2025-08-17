@@ -88,27 +88,26 @@
                             @enderror
                         </div>
 
-                        <!-- Price -->
+                        <!-- Price (Read-only) -->
                         <div>
-                            <label for="price_usd" class="block text-sm font-medium text-gray-700">
-                                Price (USD) <span class="text-red-500">*</span>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Song Price
                             </label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">$</span>
+                            <div class="bg-gray-50 border border-gray-300 rounded-md p-3">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-lg font-semibold text-gray-900">${{ number_format(\App\Models\Setting::getSongPrice(), 2) }}</p>
+                                    </div>
+                                    <div class="text-green-600">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
                                 </div>
-                                <input type="number" 
-                                       name="price_usd" 
-                                       id="price_usd" 
-                                       value="{{ old('price_usd') }}"
-                                       step="0.01" 
-                                       min="0" 
-                                       required 
-                                       class="pl-7 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
-                            @error('price_usd')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+                            <p class="mt-1 text-sm text-gray-500">
+                                Song can be purchased after the request is created.
+                            </p>
                         </div>
 
                         <!-- Submit Buttons -->

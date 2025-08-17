@@ -36,7 +36,6 @@ class SongRequestController extends Controller
             'style' => 'nullable|string|max:255',
             'mood' => 'nullable|string|max:255',
             'lyrics_idea' => 'nullable|string',
-            'price_usd' => 'required|numeric|min:0',
         ]);
 
         $validated['user_id'] = Auth::id();
