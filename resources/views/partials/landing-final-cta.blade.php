@@ -29,10 +29,13 @@
             </div>
         </div>
         
-        <div>
-            <a href="{{ route('register') }}" class="inline-block bg-yellow-400 text-purple-900 px-12 py-5 rounded-full font-bold text-xl hover:bg-yellow-300 transform hover:scale-105 transition shadow-2xl animate-pulse">
+        <div x-data>
+            <button 
+                @click="$dispatch('openRegisterModal')"
+                class="inline-block bg-yellow-400 text-purple-900 px-12 py-5 rounded-full font-bold text-xl hover:bg-yellow-300 transform hover:scale-105 transition shadow-2xl animate-pulse"
+            >
                 🎵 Get My Song for ${{ number_format(\App\Models\Setting::getSongPrice(), 2) }}
-            </a>
+            </button>
             <p class="text-white/60 text-sm mt-4">No subscription. No hidden fees. Just your song.</p>
         </div>
     </div>

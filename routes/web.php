@@ -6,6 +6,15 @@ Route::get('/', function () {
     return view('landing');
 });
 
+// Redirect old auth routes to landing page with modal
+Route::get('/login', function () {
+    return redirect('/')->with('openModal', 'login');
+})->name('login.redirect');
+
+Route::get('/register', function () {
+    return redirect('/')->with('openModal', 'register');
+})->name('register.redirect');
+
 Route::get('/ping', fn () => 'pong');
 
 Route::middleware([

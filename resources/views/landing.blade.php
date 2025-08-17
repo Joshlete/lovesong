@@ -22,19 +22,30 @@
     
     <!-- Navigation -->
     <nav class="fixed top-0 w-full bg-white/10 backdrop-blur-md z-50 border-b border-white/20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+        <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-14 sm:h-16">
                 <div class="flex items-center">
-                    <span class="text-2xl font-bold text-white">🎵 LoveSong</span>
+                    <span class="text-lg sm:text-2xl font-bold text-white flex items-center">
+                        <span class="mr-1 sm:mr-2">🎵</span>
+                        <span>LoveSong</span>
+                    </span>
                 </div>
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 sm:space-x-4" x-data>
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="text-white hover:text-yellow-300 transition">Dashboard</a>
+                        <a href="{{ url('/dashboard') }}" class="text-white hover:text-yellow-300 transition text-sm sm:text-base">Dashboard</a>
                     @else
-                        <a href="{{ route('login') }}" class="text-white hover:text-yellow-300 transition">Login</a>
-                        <a href="{{ route('register') }}" class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-yellow-300 transition transform hover:scale-105">
+                        <button 
+                            @click="$dispatch('openLoginModal')"
+                            class="text-white hover:text-yellow-300 transition text-sm sm:text-base"
+                        >
+                            Login
+                        </button>
+                        <button 
+                            @click="$dispatch('openRegisterModal')"
+                            class="bg-white text-purple-600 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full font-semibold hover:bg-yellow-300 transition transform hover:scale-105 text-sm sm:text-base"
+                        >
                             Get Started
-                        </a>
+                        </button>
                     @endauth
                 </div>
             </div>
@@ -48,6 +59,9 @@
     @include('partials.landing-faq')
     @include('partials.landing-final-cta')
     @include('partials.landing-footer')
+
+    <!-- Auth Modal -->
+    @livewire('auth-modal')
 
     <!-- Simple Countdown Script -->
     <script>
