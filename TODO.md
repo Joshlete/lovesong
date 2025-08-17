@@ -26,6 +26,11 @@
 - [ ] Order tracking improvements
 - [ ] Customer review system
 
+## 📞 Support & Communication
+- [ ] Contact page with email form for users to message admin
+- [ ] Admin contact management dashboard
+- [ ] Email notifications for new contact messages
+
 ---
 
 ## Notes
