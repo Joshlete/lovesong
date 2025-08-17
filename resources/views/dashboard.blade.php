@@ -7,6 +7,42 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <!-- Email Verification Success Message -->
+            @if (request('verified') == '1' && auth()->user()->hasVerifiedEmail())
+                <div class="mb-6 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg shadow-lg p-6 relative overflow-hidden">
+                    <!-- Animated background pattern -->
+                    <div class="absolute inset-0 opacity-10">
+                        <div class="absolute top-0 left-0 w-20 h-20 bg-white rounded-full transform -translate-x-10 -translate-y-10"></div>
+                        <div class="absolute bottom-0 right-0 w-32 h-32 bg-white rounded-full transform translate-x-16 translate-y-16"></div>
+                    </div>
+                    
+                    <div class="relative flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center justify-center w-12 h-12 bg-white/20 rounded-full">
+                                <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <div class="ml-4 flex-1">
+                            <h3 class="text-lg font-semibold text-white">🎉 Email Verified Successfully!</h3>
+                            <p class="text-white/90 text-sm mt-1">Awesome! Your email is now verified. You can now complete payments and access all features.</p>
+                            
+                            <div class="mt-3">
+                                <a href="{{ route('song-requests.create') }}" class="inline-flex items-center bg-white text-green-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-green-50 transition">
+                                    🎵 Create Your First Song →
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="ml-4">
+                            <span class="text-2xl">✅</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Email Verification Banner -->
             @if (!auth()->user()->hasVerifiedEmail())
                 <div class="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg shadow-lg p-6 relative overflow-hidden">

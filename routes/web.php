@@ -9,11 +9,11 @@ Route::get('/', function () {
 // Redirect old auth routes to landing page with modal
 Route::get('/login', function () {
     return redirect('/')->with('openModal', 'login');
-})->name('login.redirect');
+})->name('login');
 
 Route::get('/register', function () {
     return redirect('/')->with('openModal', 'register');
-})->name('register.redirect');
+})->name('register');
 
 Route::get('/ping', fn () => 'pong');
 

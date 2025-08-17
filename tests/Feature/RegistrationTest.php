@@ -11,7 +11,7 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
+    public function test_registration_screen_redirects_to_landing_page(): void
     {
         if (! Features::enabled(Features::registration())) {
             $this->markTestSkipped('Registration support is not enabled.');
@@ -19,7 +19,8 @@ class RegistrationTest extends TestCase
 
         $response = $this->get('/register');
 
-        $response->assertStatus(200);
+        $response->assertRedirect('/');
+        $response->assertSessionHas('openModal', 'register');
     }
 
     public function test_registration_screen_cannot_be_rendered_if_support_is_disabled(): void
