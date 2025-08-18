@@ -1,129 +1,64 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Create Song Request') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 lg:p-8">
-                    <form method="POST" action="{{ route('song-requests.store') }}" class="space-y-6">
-                        @csrf
+    <title>{{ config('app.name', 'Laravel') }} - Create Song Request</title>
 
-                        <!-- Recipient Name -->
-                        <div>
-                            <label for="recipient_name" class="block text-sm font-medium text-gray-700">
-                                Recipient Name <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" 
-                                   name="recipient_name" 
-                                   id="recipient_name" 
-                                   value="{{ old('recipient_name') }}"
-                                   required 
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            @error('recipient_name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Styles -->
+    @livewireStyles
+</head>
+<body class="font-sans antialiased">
+    <x-banner />
+
+    <div class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500">
+        @livewire('dashboard-header')
+
+        <!-- Page Content -->
+        <main class="py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Create Song Request Header -->
+                <div class="mb-8">
+                    <div class="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                        <!-- Animated background elements -->
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute top-4 right-6 w-16 h-16 bg-white rounded-full animate-pulse"></div>
+                            <div class="absolute bottom-4 left-8 w-12 h-12 bg-white rounded-full animate-bounce"></div>
+                            <div class="absolute top-1/2 left-1/2 w-8 h-8 bg-white rounded-full animate-ping"></div>
                         </div>
 
-                        <!-- Style -->
-                        <div>
-                            <label for="style" class="block text-sm font-medium text-gray-700">
-                                Musical Style
-                            </label>
-                            <select name="style" 
-                                    id="style" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">Select a style...</option>
-                                <option value="rock" {{ old('style') == 'rock' ? 'selected' : '' }}>Rock</option>
-                                <option value="pop" {{ old('style') == 'pop' ? 'selected' : '' }}>Pop</option>
-                                <option value="country" {{ old('style') == 'country' ? 'selected' : '' }}>Country</option>
-                                <option value="jazz" {{ old('style') == 'jazz' ? 'selected' : '' }}>Jazz</option>
-                                <option value="blues" {{ old('style') == 'blues' ? 'selected' : '' }}>Blues</option>
-                                <option value="classical" {{ old('style') == 'classical' ? 'selected' : '' }}>Classical</option>
-                                <option value="hip-hop" {{ old('style') == 'hip-hop' ? 'selected' : '' }}>Hip-Hop</option>
-                                <option value="folk" {{ old('style') == 'folk' ? 'selected' : '' }}>Folk</option>
-                            </select>
-                            @error('style')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Mood -->
-                        <div>
-                            <label for="mood" class="block text-sm font-medium text-gray-700">
-                                Mood
-                            </label>
-                            <select name="mood" 
-                                    id="mood" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">Select a mood...</option>
-                                <option value="happy" {{ old('mood') == 'happy' ? 'selected' : '' }}>Happy</option>
-                                <option value="romantic" {{ old('mood') == 'romantic' ? 'selected' : '' }}>Romantic</option>
-                                <option value="sad" {{ old('mood') == 'sad' ? 'selected' : '' }}>Sad</option>
-                                <option value="energetic" {{ old('mood') == 'energetic' ? 'selected' : '' }}>Energetic</option>
-                                <option value="calm" {{ old('mood') == 'calm' ? 'selected' : '' }}>Calm</option>
-                                <option value="nostalgic" {{ old('mood') == 'nostalgic' ? 'selected' : '' }}>Nostalgic</option>
-                                <option value="uplifting" {{ old('mood') == 'uplifting' ? 'selected' : '' }}>Uplifting</option>
-                            </select>
-                            @error('mood')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Lyrics Ideas -->
-                        <div>
-                            <label for="lyrics_idea" class="block text-sm font-medium text-gray-700">
-                                Lyrics Ideas
-                            </label>
-                            <textarea name="lyrics_idea" 
-                                      id="lyrics_idea" 
-                                      rows="4" 
-                                      placeholder="Share any lyrics ideas, themes, or messages you'd like included in the song..."
-                                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('lyrics_idea') }}</textarea>
-                            @error('lyrics_idea')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Price (Read-only) -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Song Price
-                            </label>
-                            <div class="bg-gray-50 border border-gray-300 rounded-md p-3">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-lg font-semibold text-gray-900">${{ number_format(\App\Models\Setting::getSongPrice(), 2) }}</p>
-                                    </div>
-                                    <div class="text-green-600">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h1 class="text-3xl font-bold mb-2">🎵 Create Song Request</h1>
+                                    <p class="text-white/90 text-lg">Let's create something beautiful together</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-white/80 text-sm">Ready to start?</p>
+                                    <p class="text-xl font-semibold">Let's go! 🚀</p>
                                 </div>
                             </div>
-                            <p class="mt-1 text-sm text-gray-500">
-                                Song can be purchased after the request is created.
-                            </p>
                         </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="flex items-center justify-between pt-6">
-                            <a href="{{ route('song-requests.index') }}" 
-                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Cancel
-                            </a>
-                            <button type="submit" 
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Create Song Request
-                            </button>
-                        </div>
-                    </form>
+                    </div>
                 </div>
+
+                <!-- Create Song Request Form -->
+                @livewire('create-song-request')
             </div>
-        </div>
+        </main>
     </div>
-</x-app-layout>
+
+    @stack('modals')
+
+    @livewireScripts
+</body>
+</html>

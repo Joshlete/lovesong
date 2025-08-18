@@ -47,7 +47,6 @@ window.TimeManager = {
      */
     updateAllComponents() {
         const localHour = this.getLocalHour();
-        console.log('TimeManager: Updating components with local hour:', localHour);
 
         // Emit a global event that all components can listen to
         Livewire.emit('localTimeUpdated', localHour);

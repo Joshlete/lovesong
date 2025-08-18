@@ -251,7 +251,6 @@
 window.addEventListener('livewire:initialized', () => {
     const updateDashboardTime = () => {
         const localHour = new Date().getHours();
-        console.log('Dashboard - Local hour:', localHour);
         @this.call('updateLocalHour', localHour);
     };
     

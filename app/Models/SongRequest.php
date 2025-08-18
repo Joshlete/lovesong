@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Setting;
 use App\Services\S3FileService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +17,15 @@ class SongRequest extends Model
         'style',
         'mood',
         'lyrics_idea',
+        'song_description',
+        'genre_details',
+        'tempo',
+        'vocals',
+        'instruments',
+        'song_structure',
+        'inspiration',
+
+        'special_instructions',
         'price_usd',
         'currency',
         'status',
@@ -36,11 +44,9 @@ class SongRequest extends Model
     protected $casts = [
         'delivered_at' => 'datetime',
         'payment_completed_at' => 'datetime',
-        'price_usd'    => 'decimal:2',
-        'file_size'    => 'integer',
+        'price_usd' => 'decimal:2',
+        'file_size' => 'integer',
     ];
-
-
 
     /**
      * Get the user that owns the song request.
@@ -55,15 +61,15 @@ class SongRequest extends Model
      */
     public function generateFreshDownloadUrl(): ?string
     {
-        if (!$this->file_path) {
+        if (! $this->file_path) {
             return null;
         }
 
         $s3Service = app(S3FileService::class);
-        
+
         // Use original filename if available, otherwise use the stored filename
         $downloadFilename = $this->original_filename ?: $this->getDisplayFilename();
-        
+
         return $s3Service->getDownloadUrl($this->file_path, 5, $downloadFilename); // 5 minutes - just for the immediate download
     }
 
@@ -72,7 +78,7 @@ class SongRequest extends Model
      */
     public function hasS3File(): bool
     {
-        return !empty($this->file_path);
+        return ! empty($this->file_path);
     }
 
     /**
@@ -88,18 +94,18 @@ class SongRequest extends Model
      */
     public function getFormattedFileSizeAttribute(): ?string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return null;
         }
 
         $bytes = $this->file_size;
         $units = ['B', 'KB', 'MB', 'GB'];
-        
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
-        return round($bytes, 2) . ' ' . $units[$i];
+
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
