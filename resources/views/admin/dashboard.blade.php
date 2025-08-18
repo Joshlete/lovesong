@@ -1,185 +1,86 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Admin Studio') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                @php
-                    $totalRequests = \App\Models\SongRequest::count();
-                    $pendingRequests = \App\Models\SongRequest::where('status', 'pending')->count();
-                    $inProgressRequests = \App\Models\SongRequest::where('status', 'in_progress')->count();
-                    $completedRequests = \App\Models\SongRequest::where('status', 'completed')->count();
-                @endphp
+    <title>{{ config('app.name', 'Laravel') }} - Admin Studio</title>
 
-                <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Styles -->
+    @livewireStyles
+</head>
+<body class="font-sans antialiased">
+    <x-banner />
+
+    <div class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500">
+        @livewire('dashboard-header')
+
+        <!-- Page Content -->
+        <main class="py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Flash Messages -->
+                @if (session('success'))
+                    <div class="mb-6 bg-green-100/95 backdrop-blur-sm border border-green-400 text-green-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                 </svg>
+                                <span class="font-medium">{{ session('success') }}</span>
                             </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Requests</dt>
-                                    <dd class="text-lg font-medium text-gray-900">{{ $totalRequests }}</dd>
-                                </dl>
-                            </div>
+                            <button @click="show = false" class="text-green-700 hover:text-green-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                </div>
+                @endif
 
-                <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                @if (session('error'))
+                    <div class="mb-6 bg-red-100/95 backdrop-blur-sm border border-red-400 text-red-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                                 </svg>
+                                <span class="font-medium">{{ session('error') }}</span>
                             </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Pending</dt>
-                                    <dd class="text-lg font-medium text-gray-900">{{ $pendingRequests }}</dd>
-                                </dl>
-                            </div>
+                            <button @click="show = false" class="text-red-700 hover:text-red-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                </div>
+                @endif
 
-                <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">In Progress</dt>
-                                    <dd class="text-lg font-medium text-gray-900">{{ $inProgressRequests }}</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white overflow-hidden shadow rounded-lg">
-                    <div class="p-5">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0">
-                                <svg class="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                </svg>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Completed</dt>
-                                    <dd class="text-lg font-medium text-gray-900">{{ $completedRequests }}</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Admin Dashboard Component -->
+                @livewire('admin.admin-dashboard')
+                
             </div>
-
-            <!-- Quick Actions -->
-            <div class="mb-8">
-                <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-6 lg:p-8">
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
-                        <div class="flex space-x-4">
-                            <a href="{{ route('admin.song-requests.index') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                Manage All Requests
-                            </a>
-                            <a href="{{ route('admin.song-requests.index', ['status' => 'pending']) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-yellow-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-yellow-700 focus:bg-yellow-700 active:bg-yellow-900 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                View Pending
-                            </a>
-                            <a href="{{ route('admin.song-requests.index', ['status' => 'in_progress']) }}" 
-                               class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                View In Progress
-                            </a>
-                            <a href="{{ route('admin.settings') }}" 
-                               class="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                ⚙️ Settings
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Requests -->
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 lg:p-8">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-medium text-gray-900">Recent Song Requests</h3>
-                        <a href="{{ route('admin.song-requests.index') }}" 
-                           class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                            View all →
-                        </a>
-                    </div>
-                    
-                    @php
-                        $recentRequests = \App\Models\SongRequest::with('user')->latest()->take(10)->get();
-                    @endphp
-
-                    @if($recentRequests->count() > 0)
-                        <div class="space-y-4">
-                            @foreach($recentRequests as $songRequest)
-                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition duration-150">
-                                    <div class="flex justify-between items-start">
-                                        <div class="flex-1">
-                                            <div class="flex items-center space-x-3">
-                                                <h4 class="text-sm font-medium text-gray-900">
-                                                    {{ $songRequest->recipient_name }}
-                                                </h4>
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                                    @if($songRequest->status === 'pending') bg-yellow-100 text-yellow-800
-                                                    @elseif($songRequest->status === 'in_progress') bg-blue-100 text-blue-800
-                                                    @elseif($songRequest->status === 'completed') bg-green-100 text-green-800
-                                                    @else bg-red-100 text-red-800
-                                                    @endif">
-                                                    {{ ucfirst(str_replace('_', ' ', $songRequest->status)) }}
-                                                </span>
-                                            </div>
-                                            <div class="mt-1 flex items-center space-x-4 text-sm text-gray-500">
-                                                <span>By: {{ $songRequest->user->name }}</span>
-                                                @if($songRequest->style)
-                                                    <span>{{ ucfirst($songRequest->style) }}</span>
-                                                @endif
-                                                <span>${{ number_format($songRequest->price_usd, 2) }}</span>
-                                                <span>{{ $songRequest->created_at->diffForHumans() }}</span>
-                                            </div>
-                                        </div>
-                                        <div class="ml-4">
-                                            <a href="{{ route('admin.song-requests.show', $songRequest) }}" 
-                                               class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                                                Manage
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @else
-                        <div class="text-center py-8">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No song requests yet</h3>
-                            <p class="mt-1 text-sm text-gray-500">Song requests will appear here once users start creating them.</p>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
-</x-app-layout>
+
+    @stack('modals')
+
+    @livewireScripts
+</body>
+</html>

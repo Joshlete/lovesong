@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateSongRequestRequest;
 use App\Models\SongRequest;
 use App\Services\S3FileService;
 use Illuminate\Http\Request;
@@ -17,31 +18,9 @@ class SongRequestController extends Controller
     /**
      * Display a listing of all song requests for admin.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $query = SongRequest::with('user');
-
-        // Filter by status
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // Filter by user
-        if ($request->filled('user')) {
-            $query->whereHas('user', function ($q) use ($request) {
-                $q->where('name', 'like', '%'.$request->user.'%')
-                    ->orWhere('email', 'like', '%'.$request->user.'%');
-            });
-        }
-
-        // Search by recipient name
-        if ($request->filled('search')) {
-            $query->where('recipient_name', 'like', '%'.$request->search.'%');
-        }
-
-        $songRequests = $query->latest()->paginate(10);
-
-        return view('admin.song-requests.index', compact('songRequests'));
+        return view('admin.song-requests.index');
     }
 
     /**
@@ -49,8 +28,6 @@ class SongRequestController extends Controller
      */
     public function show(SongRequest $songRequest)
     {
-        $songRequest->load('user');
-
         return view('admin.song-requests.show', compact('songRequest'));
     }
 
@@ -67,19 +44,9 @@ class SongRequestController extends Controller
     /**
      * Update the specified song request in storage.
      */
-    public function update(Request $request, SongRequest $songRequest)
+    public function update(UpdateSongRequestRequest $request, SongRequest $songRequest)
     {
-        $validated = $request->validate([
-            'status' => 'required|in:pending,in_progress,completed,cancelled',
-            'payment_reference' => 'nullable|string|max:255',
-            'song_file' => [
-                'nullable',
-                'file',
-                'max:'.($this->getMaxAllowedUploadSize() / 1024), // Convert to KB for Laravel validation
-                'mimes:'.implode(',', $this->s3Service->getAllowedExtensions()),
-            ],
-            'delivered_at' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         // Handle file upload
         if ($request->hasFile('song_file')) {
@@ -115,14 +82,13 @@ class SongRequestController extends Controller
             }
         }
 
-        // Auto-set delivered_at when status changes to completed
-        if ($validated['status'] === 'completed' && ! $validated['delivered_at']) {
-            $validated['delivered_at'] = now();
-        }
+        // Handle delivered_at logic
+        $statusUpdate = $this->prepareStatusUpdate($validated['status']);
+        $validated = array_merge($validated, $statusUpdate);
 
-        // Clear delivered_at if status is not completed
-        if ($validated['status'] !== 'completed') {
-            $validated['delivered_at'] = null;
+        // Override delivered_at if explicitly provided
+        if ($request->filled('delivered_at')) {
+            $validated['delivered_at'] = $request->input('delivered_at');
         }
 
         $songRequest->update($validated);
@@ -157,15 +123,7 @@ class SongRequestController extends Controller
             'status' => 'required|in:pending,in_progress,completed,cancelled',
         ]);
 
-        $updates = ['status' => $validated['status']];
-
-        // Auto-set delivered_at when status changes to completed
-        if ($validated['status'] === 'completed') {
-            $updates['delivered_at'] = now();
-        } elseif ($validated['status'] !== 'completed') {
-            $updates['delivered_at'] = null;
-        }
-
+        $updates = $this->prepareStatusUpdate($validated['status']);
         $songRequest->update($updates);
 
         return response()->json([
@@ -174,6 +132,23 @@ class SongRequestController extends Controller
             'status' => $songRequest->status,
             'delivered_at' => $songRequest->delivered_at?->format('M j, Y g:i A'),
         ]);
+    }
+
+    /**
+     * Prepare status update data with delivered_at logic.
+     */
+    protected function prepareStatusUpdate(string $status): array
+    {
+        $updates = ['status' => $status];
+
+        // Auto-set delivered_at when status changes to completed
+        if ($status === 'completed') {
+            $updates['delivered_at'] = now();
+        } elseif ($status !== 'completed') {
+            $updates['delivered_at'] = null;
+        }
+
+        return $updates;
     }
 
     /**
