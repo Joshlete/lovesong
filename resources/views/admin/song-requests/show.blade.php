@@ -1,234 +1,116 @@
-<x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Admin: Song Request #{{ $songRequest->id }}
-            </h2>
-            <div class="space-x-2">
-                <a href="{{ route('admin.song-requests.edit', $songRequest) }}" 
-                   class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Edit
-                </a>
-                <a href="{{ route('admin.song-requests.index') }}" 
-                   class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                    Back to List
-                </a>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Laravel') }} - Song Request #{{ $songRequest->id }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Styles -->
+    @livewireStyles
+</head>
+<body class="font-sans antialiased">
+    <x-banner />
+
+    <div class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500">
+        @livewire('dashboard-header')
+
+        <!-- Page Content -->
+        <main class="py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                        <!-- Animated background elements -->
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute top-4 right-6 w-16 h-16 bg-white rounded-full animate-pulse"></div>
+                            <div class="absolute bottom-4 left-8 w-12 h-12 bg-white rounded-full animate-bounce"></div>
+                            <div class="absolute top-1/2 left-1/2 w-8 h-8 bg-white rounded-full animate-ping"></div>
+                        </div>
+
+                        <div class="relative z-10">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h1 class="text-3xl font-bold mb-2">🎵 Song Request #{{ $songRequest->id }}</h1>
+                                    <p class="text-white/90 text-lg">{{ $songRequest->recipient_name }}</p>
+                                </div>
+                                <nav class="text-sm breadcrumbs">
+                                    <ol class="flex space-x-2 text-white/70">
+                                        <li><a href="{{ route('admin.dashboard') }}" class="hover:text-white transition">Admin Studio</a></li>
+                                        <li class="text-white/50">›</li>
+                                        <li><a href="{{ route('admin.song-requests.index') }}" class="hover:text-white transition">Song Requests</a></li>
+                                        <li class="text-white/50">›</li>
+                                        <li class="text-white">#{{ $songRequest->id }}</li>
+                                    </ol>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flash Messages -->
+                @if (session('success'))
+                    <div class="mb-6 bg-green-100/95 backdrop-blur-sm border border-green-400 text-green-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">{{ session('success') }}</span>
+                            </div>
+                            <button @click="show = false" class="text-green-700 hover:text-green-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="mb-6 bg-red-100/95 backdrop-blur-sm border border-red-400 text-red-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">{{ session('error') }}</span>
+                            </div>
+                            <button @click="show = false" class="text-red-700 hover:text-red-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Admin Song Request Show Component -->
+                @livewire('admin.admin-song-request-show', ['songRequest' => $songRequest])
+                
             </div>
-        </div>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <span class="block sm:inline">{{ session('error') }}</span>
-                </div>
-            @endif
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Main Content -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                        <div class="p-6 lg:p-8">
-                            <!-- Status Banner -->
-                            <div class="mb-6 p-4 rounded-lg 
-                                @if($songRequest->status === 'pending') bg-yellow-50 border border-yellow-200
-                                @elseif($songRequest->status === 'in_progress') bg-blue-50 border border-blue-200
-                                @elseif($songRequest->status === 'completed') bg-green-50 border border-green-200
-                                @else bg-red-50 border border-red-200
-                                @endif">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center">
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium 
-                                            @if($songRequest->status === 'pending') bg-yellow-100 text-yellow-800
-                                            @elseif($songRequest->status === 'in_progress') bg-blue-100 text-blue-800
-                                            @elseif($songRequest->status === 'completed') bg-green-100 text-green-800
-                                            @else bg-red-100 text-red-800
-                                            @endif">
-                                            {{ ucfirst(str_replace('_', ' ', $songRequest->status)) }}
-                                        </span>
-                                        <span class="ml-3 text-sm 
-                                            @if($songRequest->status === 'pending') text-yellow-700
-                                            @elseif($songRequest->status === 'in_progress') text-blue-700
-                                            @elseif($songRequest->status === 'completed') text-green-700
-                                            @else text-red-700
-                                            @endif">
-                                            Request ID: #{{ $songRequest->id }}
-                                        </span>
-                                    </div>
-                                    <!-- Quick Status Update -->
-                                    <div class="flex space-x-1">
-                                        @foreach(['pending', 'in_progress', 'completed', 'cancelled'] as $status)
-                                            @if($songRequest->status !== $status)
-                                                <form method="POST" action="{{ route('admin.song-requests.update-status', $songRequest) }}" class="inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="status" value="{{ $status }}">
-                                                    <button type="submit" 
-                                                            class="px-2 py-1 text-xs rounded
-                                                                @if($status === 'pending') bg-yellow-100 text-yellow-800 hover:bg-yellow-200
-                                                                @elseif($status === 'in_progress') bg-blue-100 text-blue-800 hover:bg-blue-200
-                                                                @elseif($status === 'completed') bg-green-100 text-green-800 hover:bg-green-200
-                                                                @else bg-red-100 text-red-800 hover:bg-red-200
-                                                                @endif"
-                                                            onclick="return confirm('Change status to {{ ucfirst(str_replace('_', ' ', $status)) }}?')">
-                                                        {{ ucfirst(str_replace('_', ' ', $status)) }}
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Request Details -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Recipient Name
-                                        </label>
-                                        <p class="text-lg text-gray-900">{{ $songRequest->recipient_name }}</p>
-                                    </div>
-
-                                    @if($songRequest->style)
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Musical Style
-                                        </label>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                            {{ ucfirst($songRequest->style) }}
-                                        </span>
-                                    </div>
-                                    @endif
-
-                                    @if($songRequest->mood)
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Mood
-                                        </label>
-                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                            {{ ucfirst($songRequest->mood) }}
-                                        </span>
-                                    </div>
-                                    @endif
-
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Price
-                                        </label>
-                                        <p class="text-2xl font-bold text-gray-900">
-                                            ${{ number_format($songRequest->price_usd, 2) }}
-                                            <span class="text-sm font-normal text-gray-500">{{ $songRequest->currency }}</span>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="space-y-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Request Created
-                                        </label>
-                                        <p class="text-gray-900">{{ $songRequest->created_at->format('F j, Y \a\t g:i A') }}</p>
-                                    </div>
-
-                                    @if($songRequest->delivered_at)
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Delivered
-                                        </label>
-                                        <p class="text-gray-900">{{ $songRequest->delivered_at->format('F j, Y \a\t g:i A') }}</p>
-                                    </div>
-                                    @endif
-
-                                    @if($songRequest->payment_reference)
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                                            Payment Reference
-                                        </label>
-                                        <p class="text-gray-900 font-mono text-sm">{{ $songRequest->payment_reference }}</p>
-                                    </div>
-                                    @endif
-
-
-                                </div>
-                            </div>
-
-                            @if($songRequest->lyrics_idea)
-                            <div class="mt-8">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Lyrics Ideas
-                                </label>
-                                <div class="bg-gray-50 rounded-lg p-4">
-                                    <p class="text-gray-900 whitespace-pre-line">{{ $songRequest->lyrics_idea }}</p>
-                                </div>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sidebar -->
-                <div class="space-y-6">
-                    <!-- User Information -->
-                    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Customer Information</h3>
-                            <div class="space-y-3">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Name</label>
-                                    <p class="text-sm text-gray-900">{{ $songRequest->user->name }}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                                    <a href="mailto:{{ $songRequest->user->email }}" 
-                                       class="text-sm text-indigo-600 hover:text-indigo-900">
-                                        {{ $songRequest->user->email }}
-                                    </a>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Joined</label>
-                                    <p class="text-sm text-gray-900">{{ $songRequest->user->created_at->format('F j, Y') }}</p>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Total Requests</label>
-                                    <p class="text-sm text-gray-900">{{ $songRequest->user->songRequests()->count() }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Actions -->
-                    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                        <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 mb-4">Actions</h3>
-                            <div class="space-y-3">
-                                <a href="{{ route('admin.song-requests.edit', $songRequest) }}" 
-                                   class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    Edit Request
-                                </a>
-                                
-                                <form method="POST" 
-                                      action="{{ route('admin.song-requests.destroy', $songRequest) }}" 
-                                      onsubmit="return confirm('Are you sure you want to delete this song request? This action cannot be undone.')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" 
-                                            class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                        Delete Request
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </main>
     </div>
-</x-app-layout>
+
+    @stack('modals')
+
+    @livewireScripts
+</body>
+</html>

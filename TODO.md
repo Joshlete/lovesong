@@ -1,39 +1,30 @@
-# LoveSong TODO
+# LoveSong - Todo List
 
-## 🔥 Next Up
-- [ ] Add analytics tracking to "Perfect For..." cards
-- [ ] Create admin analytics dashboard
-- [ ] Fix any mobile UI issues
+## Profile Page Improvements
 
-## 📊 Analytics Feature Branch
-- [ ] Create analytics_events table
-- [ ] Add click tracking JavaScript
-- [ ] Track conversion funnel
-- [ ] Set up A/B testing framework
+### Technical Debt & Architecture
+- [ ] Split CSS file into smaller component files
+- [ ] Add error handling to ProfileStats component
+- [ ] Optimize database queries in UserStatsService
+- [ ] Write tests for ProfileStats component
 
-## 🎯 Marketing Ideas
-- [ ] Create specific landing pages (birthday, romantic, business)
-- [ ] Add SEO meta tags
-- [ ] Write blog content
+### Feature Enhancements
+- [ ] Create database-driven achievement system
+- [ ] Add user theme customization options
+- [ ] Add profile completion percentage
+- [ ] Implement achievement unlock notifications
 
-## 🚀 Technical
-- [ ] Optimize images and performance
-- [ ] Add loading states
-- [ ] Improve error handling
-
-## 💰 Business
-- [ ] Dynamic pricing by song type
-- [ ] Order tracking improvements
-- [ ] Customer review system
-
-## 📞 Support & Communication
-- [ ] Contact page with email form for users to message admin
-- [ ] Admin contact management dashboard
-- [ ] Email notifications for new contact messages
+### User Experience
+- [ ] Improve mobile form layouts
 
 ---
 
+## Priority
+**High Priority:** Error handling, CSS organization, mobile improvements
+**Medium Priority:** Achievement system, customization, notifications
+**Low Priority:** Tests, completion percentage
+
 ## Notes
-- Focus on analytics first to get data
-- Use data to decide which landing pages to build
-- Test one change at a time
+- Focus on technical debt first for stability
+- Mobile experience needs review and optimization
+- Achievement system should be flexible and database-driven
