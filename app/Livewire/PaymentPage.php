@@ -18,6 +18,8 @@ class PaymentPage extends Component
 
     public $paymentError = '';
 
+    public $userEmailVerified = false;
+
     public function mount(SongRequest $songRequest)
     {
         // Ensure user owns this song request
@@ -26,6 +28,9 @@ class PaymentPage extends Component
         }
 
         $this->songRequest = $songRequest;
+
+        // Check if user's email is verified
+        $this->userEmailVerified = Auth::user()->hasVerifiedEmail();
 
         // Check if payment is already completed
         if ($this->songRequest->payment_status === 'succeeded') {

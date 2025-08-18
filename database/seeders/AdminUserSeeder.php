@@ -28,9 +28,12 @@ class AdminUserSeeder extends Seeder
 
             $this->command->info('Admin user created with email: ' . $adminEmail . ' and password: admin123');
         } else {
-            // Make existing user an admin
-            User::where('email', $adminEmail)->update(['is_admin' => true]);
-            $this->command->info('User ' . $adminEmail . ' is now an admin.');
+            // Make existing user an admin and verify them
+            User::where('email', $adminEmail)->update([
+                'is_admin' => true,
+                'email_verified_at' => now(),
+            ]);
+            $this->command->info('User ' . $adminEmail . ' is now an admin and verified.');
         }
     }
 }

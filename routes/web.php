@@ -60,11 +60,10 @@ Route::middleware([
     Route::get('song-requests/{song_request}/payment/cancel', [\App\Http\Controllers\PaymentController::class, 'cancel'])->name('payment.cancel');
 });
 
-// Admin Routes
+// Admin Routes (no email verification required for admins)
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified',
     'admin',
 ])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {

@@ -323,7 +323,11 @@
                                         <p class="font-medium text-gray-900">{{ $songRequest->getDisplayFilename() }}</p>
                                         <p class="text-sm text-gray-500">
                                             {{ $songRequest->formatted_file_size }} • 
-                                            Delivered {{ $songRequest->delivered_at->format('M j, Y g:i A') }}
+                                            @if($songRequest->delivered_at)
+                                                Delivered {{ $songRequest->delivered_at->format('M j, Y g:i A') }}
+                                            @else
+                                                Available for download
+                                            @endif
                                         </p>
                                     </div>
                                     <div class="flex items-center text-green-600">
