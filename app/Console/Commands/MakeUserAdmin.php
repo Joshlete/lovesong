@@ -36,13 +36,22 @@ class MakeUserAdmin extends Command
         }
         
         if ($user->is_admin) {
-            $this->info("User '{$user->name}' ({$email}) is already an admin.");
+            // Still verify them if they're not verified yet
+            if (!$user->hasVerifiedEmail()) {
+                $user->update(['email_verified_at' => now()]);
+                $this->info("User '{$user->name}' ({$email}) is already an admin, but has now been verified.");
+                return 0;
+            }
+            $this->info("User '{$user->name}' ({$email}) is already an admin and verified.");
             return 0;
         }
         
-        $user->update(['is_admin' => true]);
+        $user->update([
+            'is_admin' => true,
+            'email_verified_at' => now(), // Auto-verify admin users
+        ]);
         
-        $this->info("User '{$user->name}' ({$email}) has been made an admin.");
+        $this->info("User '{$user->name}' ({$email}) has been made an admin and verified.");
         return 0;
     }
 }

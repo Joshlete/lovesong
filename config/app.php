@@ -123,4 +123,16 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Email
+    |--------------------------------------------------------------------------
+    |
+    | This is the email address where contact form submissions and admin
+    | notifications will be sent. This should be your primary admin email.
+    |
+    */
+
+    'admin_email' => env('ADMIN_EMAIL', 'support@yourlovesong.dev'),
+
 ];

@@ -1,131 +1,86 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Song Request') }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 lg:p-8">
-                    <form method="POST" action="{{ route('song-requests.update', $songRequest) }}" class="space-y-6">
-                        @csrf
-                        @method('PUT')
+    <title>{{ config('app.name', 'Laravel') }} - Edit Song Request</title>
 
-                        <!-- Recipient Name -->
-                        <div>
-                            <label for="recipient_name" class="block text-sm font-medium text-gray-700">
-                                Recipient Name <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" 
-                                   name="recipient_name" 
-                                   id="recipient_name" 
-                                   value="{{ old('recipient_name', $songRequest->recipient_name) }}"
-                                   required 
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            @error('recipient_name')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
 
-                        <!-- Style -->
-                        <div>
-                            <label for="style" class="block text-sm font-medium text-gray-700">
-                                Musical Style
-                            </label>
-                            <select name="style" 
-                                    id="style" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">Select a style...</option>
-                                <option value="rock" {{ old('style', $songRequest->style) == 'rock' ? 'selected' : '' }}>Rock</option>
-                                <option value="pop" {{ old('style', $songRequest->style) == 'pop' ? 'selected' : '' }}>Pop</option>
-                                <option value="country" {{ old('style', $songRequest->style) == 'country' ? 'selected' : '' }}>Country</option>
-                                <option value="jazz" {{ old('style', $songRequest->style) == 'jazz' ? 'selected' : '' }}>Jazz</option>
-                                <option value="blues" {{ old('style', $songRequest->style) == 'blues' ? 'selected' : '' }}>Blues</option>
-                                <option value="classical" {{ old('style', $songRequest->style) == 'classical' ? 'selected' : '' }}>Classical</option>
-                                <option value="hip-hop" {{ old('style', $songRequest->style) == 'hip-hop' ? 'selected' : '' }}>Hip-Hop</option>
-                                <option value="folk" {{ old('style', $songRequest->style) == 'folk' ? 'selected' : '' }}>Folk</option>
-                            </select>
-                            @error('style')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-                        <!-- Mood -->
-                        <div>
-                            <label for="mood" class="block text-sm font-medium text-gray-700">
-                                Mood
-                            </label>
-                            <select name="mood" 
-                                    id="mood" 
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">Select a mood...</option>
-                                <option value="happy" {{ old('mood', $songRequest->mood) == 'happy' ? 'selected' : '' }}>Happy</option>
-                                <option value="romantic" {{ old('mood', $songRequest->mood) == 'romantic' ? 'selected' : '' }}>Romantic</option>
-                                <option value="sad" {{ old('mood', $songRequest->mood) == 'sad' ? 'selected' : '' }}>Sad</option>
-                                <option value="energetic" {{ old('mood', $songRequest->mood) == 'energetic' ? 'selected' : '' }}>Energetic</option>
-                                <option value="calm" {{ old('mood', $songRequest->mood) == 'calm' ? 'selected' : '' }}>Calm</option>
-                                <option value="nostalgic" {{ old('mood', $songRequest->mood) == 'nostalgic' ? 'selected' : '' }}>Nostalgic</option>
-                                <option value="uplifting" {{ old('mood', $songRequest->mood) == 'uplifting' ? 'selected' : '' }}>Uplifting</option>
-                            </select>
-                            @error('mood')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+    <!-- Styles -->
+    @livewireStyles
+</head>
+<body class="font-sans antialiased">
+    <x-banner />
 
-                        <!-- Lyrics Ideas -->
-                        <div>
-                            <label for="lyrics_idea" class="block text-sm font-medium text-gray-700">
-                                Lyrics Ideas
-                            </label>
-                            <textarea name="lyrics_idea" 
-                                      id="lyrics_idea" 
-                                      rows="4" 
-                                      placeholder="Share any lyrics ideas, themes, or messages you'd like included in the song..."
-                                      class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">{{ old('lyrics_idea', $songRequest->lyrics_idea) }}</textarea>
-                            @error('lyrics_idea')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
+    <div class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500">
+        @livewire('dashboard-header')
 
-                        <!-- Price -->
-                        <div>
-                            <label for="price_usd" class="block text-sm font-medium text-gray-700">
-                                Price (USD) <span class="text-red-500">*</span>
-                            </label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">$</span>
-                                </div>
-                                <input type="number" 
-                                       name="price_usd" 
-                                       id="price_usd" 
-                                       value="{{ old('price_usd', $songRequest->price_usd) }}"
-                                       step="0.01" 
-                                       min="0" 
-                                       required 
-                                       class="pl-7 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+        <!-- Page Content -->
+        <main class="py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Flash Messages -->
+                @if (session('success'))
+                    <div class="mb-6 bg-green-100/95 backdrop-blur-sm border border-green-400 text-green-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">{{ session('success') }}</span>
                             </div>
-                            @error('price_usd')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="flex items-center justify-between pt-6">
-                            <a href="{{ route('song-requests.show', $songRequest) }}" 
-                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Cancel
-                            </a>
-                            <button type="submit" 
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Update Song Request
+                            <button @click="show = false" class="text-green-700 hover:text-green-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
                             </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="mb-6 bg-red-100/95 backdrop-blur-sm border border-red-400 text-red-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">{{ session('error') }}</span>
+                            </div>
+                            <button @click="show = false" class="text-red-700 hover:text-red-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Edit Song Request Component -->
+                @livewire('edit-song-request', ['songRequest' => $songRequest])
+                
             </div>
-        </div>
+        </main>
     </div>
-</x-app-layout>
+
+    @stack('modals')
+
+    @livewireScripts
+</body>
+</html>

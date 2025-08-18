@@ -103,18 +103,24 @@ jobs:
           fi
           echo "✅ Fortify config found"
           
-          # Check if authentication views exist
-          if [ ! -f "resources/views/auth/login.blade.php" ]; then
-            echo "❌ Login view not found"
+          # Check for custom authentication setup (AuthModal instead of traditional views)
+          if [ ! -f "app/Livewire/AuthModal.php" ]; then
+            echo "❌ AuthModal component not found"
             exit 1
           fi
-          echo "✅ Login view found"
+          echo "✅ AuthModal component found"
           
-          if [ ! -f "resources/views/auth/register.blade.php" ]; then
-            echo "❌ Register view not found"
+          if [ ! -f "resources/views/livewire/partials/auth-modal-login.blade.php" ]; then
+            echo "❌ Login modal view not found"
             exit 1
           fi
-          echo "✅ Register view found"
+          echo "✅ Login modal view found"
+          
+          if [ ! -f "resources/views/livewire/auth-modal.blade.php" ]; then
+            echo "❌ Auth modal main view not found"
+            exit 1
+          fi
+          echo "✅ Auth modal main view found"
           
           # Check if dashboard view exists
           if [ ! -f "resources/views/dashboard.blade.php" ]; then
@@ -122,6 +128,13 @@ jobs:
             exit 1
           fi
           echo "✅ Dashboard view found"
+          
+          # Check if landing page exists (custom auth setup)
+          if [ ! -f "resources/views/landing.blade.php" ]; then
+            echo "❌ Landing page not found"
+            exit 1
+          fi
+          echo "✅ Landing page found"
           
           # Check if Jetstream service provider is registered
           if ! grep -q "JetstreamServiceProvider" bootstrap/providers.php; then
@@ -136,6 +149,13 @@ jobs:
             exit 1
           fi
           echo "✅ Tailwind config found"
+          
+          # Verify auth routes are properly configured
+          if ! grep -q "Route::get('/login'" routes/web.php; then
+            echo "❌ Login route not found"
+            exit 1
+          fi
+          echo "✅ Auth routes configured"
           
           echo "🎉 All Jetstream components verified successfully!"
 

@@ -30,6 +30,15 @@ class PaymentController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Check if user email is verified (this should be caught by middleware, but double-check)
+        if (!Auth::user()->hasVerifiedEmail()) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Please verify your email address before making a payment.',
+                'verification_required' => true,
+            ]);
+        }
+
         // Check if payment is already completed
         if ($songRequest->payment_status === 'succeeded') {
             return response()->json([

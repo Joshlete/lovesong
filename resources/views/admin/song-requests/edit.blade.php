@@ -1,230 +1,126 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Admin: Edit Song Request #{{ $songRequest->id }}
-        </h2>
-    </x-slot>
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 lg:p-8">
-                    <!-- Customer Info Header -->
-                    <div class="mb-6 p-4 bg-gray-50 rounded-lg">
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Customer Information</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                            <div>
-                                <span class="font-medium text-gray-700">Name:</span>
-                                <span class="text-gray-900">{{ $songRequest->user->name }}</span>
-                            </div>
-                            <div>
-                                <span class="font-medium text-gray-700">Email:</span>
-                                <a href="mailto:{{ $songRequest->user->email }}" class="text-indigo-600 hover:text-indigo-900">
-                                    {{ $songRequest->user->email }}
-                                </a>
-                            </div>
-                            <div>
-                                <span class="font-medium text-gray-700">Request Date:</span>
-                                <span class="text-gray-900">{{ $songRequest->created_at->format('M j, Y') }}</span>
+    <title>{{ config('app.name', 'Laravel') }} - Edit Song Request #{{ $songRequest->id }}</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Styles -->
+    @livewireStyles
+</head>
+<body class="font-sans antialiased">
+    <x-banner />
+
+    <div class="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500">
+        @livewire('dashboard-header')
+
+        <!-- Page Content -->
+        <main class="py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                        <!-- Animated background elements -->
+                        <div class="absolute inset-0 opacity-10">
+                            <div class="absolute top-4 right-6 w-16 h-16 bg-white rounded-full animate-pulse"></div>
+                            <div class="absolute bottom-4 left-8 w-12 h-12 bg-white rounded-full animate-bounce"></div>
+                            <div class="absolute top-1/2 left-1/2 w-8 h-8 bg-white rounded-full animate-ping"></div>
+                        </div>
+
+                        <div class="relative z-10">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div>
+                                    <h1 class="text-3xl font-bold mb-2">✏️ Edit Song Request #{{ $songRequest->id }}</h1>
+                                    <p class="text-white/90 text-lg">{{ $songRequest->recipient_name }}</p>
+                                </div>
+                                <nav class="text-sm breadcrumbs">
+                                    <ol class="flex space-x-2 text-white/70">
+                                        <li><a href="{{ route('admin.dashboard') }}" class="hover:text-white transition">Admin Studio</a></li>
+                                        <li class="text-white/50">›</li>
+                                        <li><a href="{{ route('admin.song-requests.index') }}" class="hover:text-white transition">Song Requests</a></li>
+                                        <li class="text-white/50">›</li>
+                                        <li><a href="{{ route('admin.song-requests.show', $songRequest) }}" class="hover:text-white transition">#{{ $songRequest->id }}</a></li>
+                                        <li class="text-white/50">›</li>
+                                        <li class="text-white">Edit</li>
+                                    </ol>
+                                </nav>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <form method="POST" action="{{ route('admin.song-requests.update', $songRequest) }}" class="space-y-6" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-
-                        <!-- Request Details (Read-only) -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Recipient Name
-                                </label>
-                                <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ $songRequest->recipient_name }}</p>
+                <!-- Flash Messages -->
+                @if (session('success'))
+                    <div class="mb-6 bg-green-100/95 backdrop-blur-sm border border-green-400 text-green-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">{{ session('success') }}</span>
                             </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Price
-                                </label>
-                                <p class="text-gray-900 bg-gray-50 p-3 rounded-md">${{ number_format($songRequest->price_usd, 2) }}</p>
-                            </div>
-
-                            @if($songRequest->style)
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Musical Style
-                                </label>
-                                <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ ucfirst($songRequest->style) }}</p>
-                            </div>
-                            @endif
-
-                            @if($songRequest->mood)
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Mood
-                                </label>
-                                <p class="text-gray-900 bg-gray-50 p-3 rounded-md">{{ ucfirst($songRequest->mood) }}</p>
-                            </div>
-                            @endif
-                        </div>
-
-                        @if($songRequest->lyrics_idea)
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Lyrics Ideas
-                            </label>
-                            <div class="bg-gray-50 rounded-lg p-4">
-                                <p class="text-gray-900 whitespace-pre-line">{{ $songRequest->lyrics_idea }}</p>
-                            </div>
-                        </div>
-                        @endif
-
-                        <!-- Admin-editable fields -->
-                        <hr class="my-8">
-
-                        <h3 class="text-lg font-medium text-gray-900 mb-4">Admin Controls</h3>
-
-                        <!-- Status -->
-                        <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700">
-                                Status <span class="text-red-500">*</span>
-                            </label>
-                            <select name="status" 
-                                    id="status" 
-                                    required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="pending" {{ old('status', $songRequest->status) === 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="in_progress" {{ old('status', $songRequest->status) === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                                <option value="completed" {{ old('status', $songRequest->status) === 'completed' ? 'selected' : '' }}>Completed</option>
-                                <option value="cancelled" {{ old('status', $songRequest->status) === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                            </select>
-                            @error('status')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Payment Reference -->
-                        <div>
-                            <label for="payment_reference" class="block text-sm font-medium text-gray-700">
-                                Payment Reference
-                            </label>
-                            <input type="text" 
-                                   name="payment_reference" 
-                                   id="payment_reference" 
-                                   value="{{ old('payment_reference', $songRequest->payment_reference) }}"
-                                   placeholder="Enter payment reference or transaction ID"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            @error('payment_reference')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Song File Upload -->
-                        <div class="mb-6">
-                            <label for="song_file" class="block text-sm font-medium text-gray-700 mb-2">
-                                🎵 Upload Song File
-                            </label>
-                            
-                            @if($songRequest->hasS3File())
-                                <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-green-800">
-                                                ✅ Current File: {{ $songRequest->getDisplayFilename() }}
-                                            </p>
-                                            <p class="text-sm text-green-600">
-                                                Size: {{ $songRequest->formatted_file_size }} • 
-                                                Uploaded: {{ $songRequest->updated_at->format('M j, Y g:i A') }}
-                                            </p>
-                                        </div>
-                                        <a href="{{ route('admin.song-requests.download', $songRequest) }}" 
-                                           class="text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded transition">
-                                            Download
-                                        </a>
-                                    </div>
-                                </div>
-                            @endif
-                            
-                            <input type="file" 
-                                   name="song_file" 
-                                   id="song_file"
-                                   accept=".mp3,.wav,.m4a,.aac,.ogg,.flac"
-                                   class="block w-full text-sm text-gray-500
-                                          file:mr-4 file:py-2 file:px-4
-                                          file:rounded-md file:border-0
-                                          file:text-sm file:font-medium
-                                          file:bg-indigo-50 file:text-indigo-700
-                                          hover:file:bg-indigo-100
-                                          focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
-                            
-                            @error('song_file')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                            
-                            <div class="mt-2 text-sm text-gray-500">
-                                <p><strong>✨ Pro tip:</strong> Uploading a file will automatically mark the request as "completed"!</p>
-                                <p>Accepted formats: MP3, WAV, M4A, AAC, OGG, FLAC</p>
-                                @php
-                                    $uploadMax = ini_get('upload_max_filesize');
-                                    $postMax = ini_get('post_max_size');
-                                    $serverLimit = $uploadMax < $postMax ? $uploadMax : $postMax;
-                                @endphp
-                                <p><strong>Current upload limit:</strong> {{ $serverLimit }}</p>
-
-                                @if($songRequest->hasS3File())
-                                    <p class="text-amber-600">⚠️ Uploading a new file will replace the current one.</p>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- Delivered At -->
-                        <div>
-                            <label for="delivered_at" class="block text-sm font-medium text-gray-700">
-                                Delivery Date & Time
-                            </label>
-                            <input type="datetime-local" 
-                                   name="delivered_at" 
-                                   id="delivered_at" 
-                                   value="{{ old('delivered_at', $songRequest->delivered_at?->format('Y-m-d\TH:i')) }}"
-                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            @error('delivered_at')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
-                            <p class="mt-1 text-sm text-gray-500">
-                                Leave empty to automatically set when status changes to "Completed".
-                            </p>
-                        </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="flex items-center justify-between pt-6">
-                            <a href="{{ route('admin.song-requests.show', $songRequest) }}" 
-                               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Cancel
-                            </a>
-                            <button type="submit" 
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                                Update Song Request
+                            <button @click="show = false" class="text-green-700 hover:text-green-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
                             </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="mb-6 bg-red-100/95 backdrop-blur-sm border border-red-400 text-red-700 px-6 py-4 rounded-xl relative shadow-lg" 
+                         role="alert"
+                         x-data="{ show: true }" 
+                         x-show="show"
+                         x-transition.opacity.duration.300ms>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <svg class="h-5 w-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">{{ session('error') }}</span>
+                            </div>
+                            <button @click="show = false" class="text-red-700 hover:text-red-900">
+                                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Admin Song Request Show Component with Auto-Edit Mode -->
+                @livewire('admin.admin-song-request-show', ['songRequest' => $songRequest], key($songRequest->id.'-edit-mode'))
+                
             </div>
-        </div>
+        </main>
     </div>
 
+    @stack('modals')
+
+    @livewireScripts
+
+    <!-- Auto-enable edit mode when coming to edit page -->
     <script>
-        // Auto-fill delivered_at when status changes to completed
-        document.getElementById('status').addEventListener('change', function() {
-            const deliveredAtField = document.getElementById('delivered_at');
-            if (this.value === 'completed' && !deliveredAtField.value) {
-                const now = new Date();
-                const localTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-                deliveredAtField.value = localTime.toISOString().slice(0, 16);
-            } else if (this.value !== 'completed') {
-                // Optionally clear the field if status is not completed
-                // deliveredAtField.value = '';
-            }
+        document.addEventListener('livewire:init', () => {
+            // Auto-trigger edit mode when this page loads
+            Livewire.dispatch('triggerEditMode');
         });
     </script>
-</x-app-layout>
+</body>
+</html>

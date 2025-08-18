@@ -13,9 +13,7 @@ class SongRequestController extends Controller
      */
     public function index()
     {
-        $songRequests = Auth::user()->songRequests()->latest()->paginate(10);
-        
-        return view('song-requests.index', compact('songRequests'));
+        return view('song-requests.index');
     }
 
     /**
@@ -36,7 +34,6 @@ class SongRequestController extends Controller
             'style' => 'nullable|string|max:255',
             'mood' => 'nullable|string|max:255',
             'lyrics_idea' => 'nullable|string',
-            'price_usd' => 'required|numeric|min:0',
         ]);
 
         $validated['user_id'] = Auth::id();
@@ -45,8 +42,14 @@ class SongRequestController extends Controller
 
         $songRequest = SongRequest::create($validated);
 
+        // Auto-send verification email if user isn't verified yet
+        $user = Auth::user();
+        if (! $user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+        }
+
         return redirect()->route('song-requests.show', $songRequest)
-            ->with('success', 'Song request created successfully!');
+            ->with('success', 'Song request created successfully!'.(! $user->hasVerifiedEmail() ? ' We\'ve sent a verification email to complete your order.' : ''));
     }
 
     /**
@@ -67,17 +70,6 @@ class SongRequestController extends Controller
      */
     public function edit(SongRequest $songRequest)
     {
-        // Ensure user can only edit their own song requests
-        if ($songRequest->user_id !== Auth::id()) {
-            abort(404);
-        }
-
-        // Only allow editing if the request is still pending
-        if ($songRequest->status !== 'pending') {
-            return redirect()->route('song-requests.show', $songRequest)
-                ->with('error', 'You can only edit pending song requests.');
-        }
-
         return view('song-requests.edit', compact('songRequest'));
     }
 
@@ -150,13 +142,14 @@ class SongRequestController extends Controller
         // Check for S3 file
         if ($songRequest->hasS3File()) {
             $s3Service = app(\App\Services\S3FileService::class);
-            
-            if (!$s3Service->songExists($songRequest->file_path)) {
+
+            if (! $s3Service->songExists($songRequest->file_path)) {
                 abort(404, 'File not found in storage');
             }
 
             // Generate a fresh download URL on demand
             $freshUrl = $songRequest->generateFreshDownloadUrl();
+
             return redirect($freshUrl);
         }
 

@@ -3,16 +3,22 @@
 namespace App\Livewire;
 
 use App\Models\SongRequest;
+use App\Models\User;
 use App\Services\PaymentService;
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Component;
 
 class PaymentPage extends Component
 {
     public SongRequest $songRequest;
+
     public $paymentProcessing = false;
+
     public $paymentSuccess = false;
+
     public $paymentError = '';
+
+    public $userEmailVerified = false;
 
     public function mount(SongRequest $songRequest)
     {
@@ -22,7 +28,10 @@ class PaymentPage extends Component
         }
 
         $this->songRequest = $songRequest;
-        
+
+        // Check if user's email is verified
+        $this->userEmailVerified = Auth::user()->hasVerifiedEmail();
+
         // Check if payment is already completed
         if ($this->songRequest->payment_status === 'succeeded') {
             $this->paymentSuccess = true;
@@ -31,7 +40,7 @@ class PaymentPage extends Component
         // Check if Stripe is configured
         try {
             $paymentService = app(PaymentService::class);
-            if (!$paymentService->isConfigured()) {
+            if (! $paymentService->isConfigured()) {
                 $this->paymentError = 'Payment system is temporarily unavailable. Please contact support.';
             }
         } catch (\Exception $e) {
@@ -41,16 +50,26 @@ class PaymentPage extends Component
 
     public function processPayment()
     {
+        // Check email verification before processing payment
+        /** @var User $user */
+        $user = Auth::user();
+        if (! $user->hasVerifiedEmail()) {
+            $this->paymentError = 'Please verify your email address before completing payment.';
+
+            return;
+        }
+
         $this->paymentProcessing = true;
         $this->paymentError = '';
 
         try {
             $paymentService = app(PaymentService::class);
-            
+
             // Check if Stripe is configured before attempting payment
-            if (!$paymentService->isConfigured()) {
+            if (! $paymentService->isConfigured()) {
                 $this->paymentError = 'Payment system is temporarily unavailable. Please contact support.';
                 $this->paymentProcessing = false;
+
                 return;
             }
 
@@ -67,7 +86,7 @@ class PaymentPage extends Component
             \Illuminate\Support\Facades\Log::error('Payment processing error', [
                 'song_request_id' => $this->songRequest->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             // Show user-friendly error
@@ -82,6 +101,7 @@ class PaymentPage extends Component
         // Only allow test payments in development
         if (app()->isProduction()) {
             $this->paymentError = 'Test payments are not allowed in production.';
+
             return;
         }
 
@@ -90,7 +110,7 @@ class PaymentPage extends Component
 
         try {
             $paymentService = app(PaymentService::class);
-            
+
             if ($type === 'fail') {
                 $result = $paymentService->createFailedTestPayment($this->songRequest);
             } else {
@@ -100,7 +120,7 @@ class PaymentPage extends Component
             if ($result['success']) {
                 $this->paymentSuccess = true;
                 $this->songRequest->refresh(); // Refresh the model
-                
+
                 // Dispatch browser event for success animation
                 $this->dispatch('payment-success');
             } else {
@@ -108,7 +128,7 @@ class PaymentPage extends Component
                 // Don't refresh the model for failed payments to preserve the UI state
             }
         } catch (\Exception $e) {
-            $this->paymentError = 'Payment processing error: ' . $e->getMessage();
+            $this->paymentError = 'Payment processing error: '.$e->getMessage();
         }
 
         $this->paymentProcessing = false;
@@ -117,11 +137,19 @@ class PaymentPage extends Component
     public function refreshPaymentStatus()
     {
         $this->songRequest->refresh();
-        
+
         if ($this->songRequest->payment_status === 'succeeded') {
             $this->paymentSuccess = true;
             $this->dispatch('payment-success');
         }
+    }
+
+    public function getUserEmailVerifiedProperty(): bool
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        
+        return $user->hasVerifiedEmail();
     }
 
     public function render()

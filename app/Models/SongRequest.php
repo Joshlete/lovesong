@@ -17,6 +17,15 @@ class SongRequest extends Model
         'style',
         'mood',
         'lyrics_idea',
+        'song_description',
+        'genre_details',
+        'tempo',
+        'vocals',
+        'instruments',
+        'song_structure',
+        'inspiration',
+
+        'special_instructions',
         'price_usd',
         'currency',
         'status',
@@ -35,8 +44,8 @@ class SongRequest extends Model
     protected $casts = [
         'delivered_at' => 'datetime',
         'payment_completed_at' => 'datetime',
-        'price_usd'    => 'decimal:2',
-        'file_size'    => 'integer',
+        'price_usd' => 'decimal:2',
+        'file_size' => 'integer',
     ];
 
     /**
@@ -52,15 +61,15 @@ class SongRequest extends Model
      */
     public function generateFreshDownloadUrl(): ?string
     {
-        if (!$this->file_path) {
+        if (! $this->file_path) {
             return null;
         }
 
         $s3Service = app(S3FileService::class);
-        
+
         // Use original filename if available, otherwise use the stored filename
         $downloadFilename = $this->original_filename ?: $this->getDisplayFilename();
-        
+
         return $s3Service->getDownloadUrl($this->file_path, 5, $downloadFilename); // 5 minutes - just for the immediate download
     }
 
@@ -69,7 +78,7 @@ class SongRequest extends Model
      */
     public function hasS3File(): bool
     {
-        return !empty($this->file_path);
+        return ! empty($this->file_path);
     }
 
     /**
@@ -85,18 +94,18 @@ class SongRequest extends Model
      */
     public function getFormattedFileSizeAttribute(): ?string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return null;
         }
 
         $bytes = $this->file_size;
         $units = ['B', 'KB', 'MB', 'GB'];
-        
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
-        return round($bytes, 2) . ' ' . $units[$i];
+
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
@@ -116,10 +125,18 @@ class SongRequest extends Model
     }
 
     /**
-     * Delete the S3 file when the song request is deleted
+     * Boot the model
      */
     protected static function booted()
     {
+        // Automatically set price from admin settings when creating new requests
+        static::creating(function ($songRequest) {
+            if (empty($songRequest->price_usd)) {
+                $songRequest->price_usd = Setting::getSongPrice();
+            }
+        });
+
+        // Delete the S3 file when the song request is deleted
         static::deleting(function ($songRequest) {
             if ($songRequest->file_path) {
                 $s3Service = app(S3FileService::class);
