@@ -32,6 +32,36 @@
         </div>
     </div>
 
+    <!-- Email Verification Warning -->
+    @if(!$userEmailVerified)
+        <div class="bg-orange-50 border border-orange-200 rounded-lg p-6 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-orange-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-orange-800">
+                        📧 Email Verification Required
+                    </h3>
+                    <div class="mt-2 text-sm text-orange-700">
+                        <p>You need to verify your email address before completing payment.</p>
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex items-center space-x-3">
+                            @livewire('resend-verification-button', ['variant' => 'small'])
+                            
+                            <a href="{{ route('verification.notice') }}" class="text-orange-800 underline text-sm hover:text-orange-900 transition">
+                                Learn More →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- Payment Status -->
     @if($songRequest->payment_status === 'pending' || $songRequest->payment_status === 'failed')
         @if(!$paymentSuccess)
@@ -44,9 +74,14 @@
                         wire:click="processPayment"
                         wire:loading.attr="disabled"
                         wire:target="processPayment"
-                        class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4">
+                        @if(!$userEmailVerified) disabled @endif
+                        class="w-full @if($userEmailVerified) bg-green-600 hover:bg-green-700 @else bg-gray-400 cursor-not-allowed @endif text-white font-medium py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4">
                     <span wire:loading.remove wire:target="processPayment">
-                        Pay ${{ number_format($songRequest->price_usd, 2) }} with Stripe
+                        @if($userEmailVerified)
+                            Pay ${{ number_format($songRequest->price_usd, 2) }} with Stripe
+                        @else
+                            Verify Email to Continue
+                        @endif
                     </span>
                     <span wire:loading wire:target="processPayment">
                         Redirecting to checkout...
