@@ -6,7 +6,7 @@
             </h2>
             <a href="{{ route('admin.dashboard') }}" 
                class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Admin Dashboard
+                Admin Studio
             </a>
         </div>
     </x-slot>

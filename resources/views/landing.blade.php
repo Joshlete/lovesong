@@ -32,7 +32,7 @@
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4" x-data>
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="text-white hover:text-yellow-300 transition text-sm sm:text-base">Dashboard</a>
+                        <a href="{{ url('/dashboard') }}" class="text-white hover:text-yellow-300 transition text-sm sm:text-base">Song Collection</a>
                     @else
                         <button 
                             @click="$dispatch('openLoginModal')"

@@ -29,34 +29,6 @@
                 </div>
             </div>
 
-            <!-- Email Verification Success Banner -->
-            @if($showEmailVerifiedSuccess)
-                <x-notification-banner 
-                    type="success"
-                    title="🎉 Email Verified Successfully!"
-                    message="Awesome! Your email is now verified. You can now complete payments and access all features."
-                    :action-url="route('song-requests.create')"
-                    action-text="🎵 Create Your First Song →"
-                />
-            @endif
-
-            <!-- Email Verification Warning Banner -->
-            @if(!$userEmailVerified)
-                <x-notification-banner 
-                    type="warning"
-                    title="📧 Verify Your Email to Complete Orders"
-                    message="You can create song requests, but you'll need to verify your email before making any payments."
-                >
-                    <div class="flex items-center space-x-3">
-                        @livewire('resend-verification-button', ['variant' => 'banner'])
-                        
-                        <a href="{{ route('verification.notice') }}" class="text-white underline text-sm hover:text-white/80 flex items-center transition">
-                            Learn More →
-                        </a>
-                    </div>
-                </x-notification-banner>
-            @endif
-
             <!-- Dashboard Stats with Psychological Design -->
             <div class="grid grid-cols-2 gap-4 sm:grid-cols-4 mb-8">
                 <x-psych-card variant="info" title="{{ $stats['total_requests'] }}" subtitle="Total Songs" emoji="🎵" :hoverable="false" />
@@ -136,16 +108,6 @@
                            class="flex-1 bg-white/20 backdrop-blur-sm text-white px-6 py-4 rounded-xl font-semibold border border-white/30 hover:bg-white/30 transform hover:scale-105 transition text-center">
                             📚 View My Collection
                         </a>
-                        @if($stats['total_requests'] > 0)
-                            <button wire:click="refreshRecentRequests"
-                                    class="bg-white/10 backdrop-blur-sm text-white px-4 py-4 rounded-xl font-medium border border-white/20 hover:bg-white/20 transition">
-                                <svg wire:loading wire:target="refreshRecentRequests" class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 818-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                <span wire:loading.remove wire:target="refreshRecentRequests">🔄</span>
-                            </button>
-                        @endif
                     </div>
                 </x-psych-card>
             </div>
@@ -156,11 +118,12 @@
                     <x-psych-card variant="default" title="🎼 Your Recent Creations" subtitle="Track your musical journey">
                         <div class="space-y-4 mt-6">
                             @foreach($recentRequests as $request)
-                                <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 hover:from-purple-50 hover:to-pink-50 transition-all duration-300 transform hover:scale-[1.02]">
+                                <div class="group cursor-pointer bg-gradient-to-r from-gray-50 to-gray-100 hover:from-purple-50 hover:to-pink-50 rounded-xl p-4 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg border-2 border-transparent hover:border-purple-200"
+                                     onclick="window.location.href='{{ route('song-requests.show', $request) }}'">
                                     <div class="flex justify-between items-start">
                                         <div class="flex-1">
                                             <div class="flex items-center space-x-3 mb-2">
-                                                <div class="text-2xl">
+                                                <div class="text-2xl group-hover:scale-110 transition-transform duration-200">
                                                     @if($request->status === 'completed') 🎉
                                                     @elseif($request->status === 'in_progress') 🎨
                                                     @elseif($request->status === 'pending') ⏳
@@ -168,30 +131,49 @@
                                                     @endif
                                                 </div>
                                                 <div>
-                                                    <h4 class="font-bold text-gray-900">
+                                                    <h4 class="font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-200">
                                                         {{ $request->recipient_name }}
                                                     </h4>
                                                     <x-status-badge :status="$request->status" />
                                                 </div>
                                             </div>
-                                            <div class="flex items-center gap-4 text-sm text-gray-600">
+                                            <div class="flex items-center gap-4 text-sm text-gray-600 group-hover:text-purple-600 transition-colors duration-200">
                                                 @if($request->style)
-                                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">{{ ucfirst($request->style) }}</span>
+                                                    <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium group-hover:bg-purple-200 transition-colors duration-200">{{ ucfirst($request->style) }}</span>
                                                 @endif
                                                 @if($request->mood)
-                                                    <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-xs font-medium">{{ ucfirst($request->mood) }}</span>
+                                                    <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-xs font-medium group-hover:bg-pink-200 transition-colors duration-200">{{ ucfirst($request->mood) }}</span>
                                                 @endif
-                                                <span class="font-bold text-green-600">${{ number_format($request->price_usd, 2) }}</span>
-                                                <span>{{ $request->created_at->diffForHumans() }}</span>
+                                                <span class="font-bold text-green-600 group-hover:text-green-700 transition-colors duration-200">${{ number_format($request->price_usd, 2) }}</span>
+                                                <span class="group-hover:text-purple-700 transition-colors duration-200">{{ $request->created_at->diffForHumans() }}</span>
                                             </div>
                                         </div>
-                                        <div class="ml-4">
-                                            <a href="{{ route('song-requests.show', $request) }}" 
-                                               class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transform hover:scale-105 transition">
-                                                View Details
-                                            </a>
+                                        <div class="ml-4 flex items-center">
+                                            <!-- Visual Click Indicator -->
+                                            <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-purple-600 font-medium text-sm mr-2">
+                                                Click to view →
+                                            </div>
+                                            <!-- Clickable Area Icon -->
+                                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 group-hover:from-purple-600 group-hover:to-pink-600 text-white p-3 rounded-lg transition-all duration-200 transform group-hover:scale-110 shadow-md group-hover:shadow-lg">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                            </div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Enhanced visual feedback for completed songs -->
+                                    @if($request->status === 'completed')
+                                        <div class="mt-3 p-2 bg-green-50 group-hover:bg-green-100 rounded-lg border border-green-200 group-hover:border-green-300 transition-all duration-200">
+                                            <div class="flex items-center text-green-700 text-sm font-medium">
+                                                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                                🎵 Your song is ready to download!
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>

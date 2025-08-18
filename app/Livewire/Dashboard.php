@@ -13,8 +13,6 @@ class Dashboard extends Component
 {
     use LocalTimeAware;
 
-    public bool $showEmailVerifiedSuccess = false;
-
     public bool $showCelebration = false;
 
     public int $recentRequestsLimit = 5;
@@ -29,11 +27,7 @@ class Dashboard extends Component
 
     public function mount(): void
     {
-        /** @var User $user */
-        $user = Auth::user();
-
-        // Check if user just verified their email
-        $this->showEmailVerifiedSuccess = request('verified') == '1' && $user->hasVerifiedEmail();
+        // Dashboard initialization
     }
 
     /**
@@ -66,17 +60,6 @@ class Dashboard extends Component
 
                 return $request;
             });
-    }
-
-    /**
-     * Get the user's email verification status.
-     */
-    public function getUserEmailVerifiedProperty(): bool
-    {
-        /** @var User $user */
-        $user = Auth::user();
-
-        return $user->hasVerifiedEmail();
     }
 
     /**
@@ -239,20 +222,10 @@ class Dashboard extends Component
         $this->dispatch('hide-celebration');
     }
 
-    /**
-     * Handle refresh of recent requests.
-     */
-    public function refreshRecentRequests(): void
-    {
-        // This will trigger a re-render of the component
-        $this->dispatch('recent-requests-refreshed');
-    }
-
     public function render()
     {
         return view('livewire.dashboard', [
             'recentRequests' => $this->recentRequests,
-            'userEmailVerified' => $this->userEmailVerified,
             'stats' => $this->stats,
             'achievements' => $this->achievements,
             'nextMilestone' => $this->nextMilestone,
