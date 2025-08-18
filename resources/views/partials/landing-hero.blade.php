@@ -31,12 +31,19 @@
 
         <!-- CTA Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center" x-data>
-            <button 
-                @click="$dispatch('openRegisterModal')"
-                class="bg-yellow-400 text-purple-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transform hover:scale-105 transition shadow-xl animate-bounce"
-            >
-                🎤 Create My Song Now
-            </button>
+            @auth
+                <a href="{{ route('song-requests.create') }}"
+                   class="bg-yellow-400 text-purple-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transform hover:scale-105 transition shadow-xl animate-bounce">
+                    🎤 Create My Song Now
+                </a>
+            @else
+                <button 
+                    @click="$dispatch('openRegisterModal')"
+                    class="bg-yellow-400 text-purple-900 px-8 py-4 rounded-full font-bold text-lg hover:bg-yellow-300 transform hover:scale-105 transition shadow-xl animate-bounce"
+                >
+                    🎤 Create My Song Now
+                </button>
+            @endauth
             <button onclick="document.getElementById('how-it-works').scrollIntoView({behavior: 'smooth'})" class="text-white underline hover:text-yellow-300 transition">
                 See how it works →
             </button>

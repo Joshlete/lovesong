@@ -17,6 +17,20 @@ Route::get('/register', function () {
 
 Route::get('/ping', fn () => 'pong');
 
+// Legal pages
+Route::get('/privacy', function () {
+    return view('legal.privacy');
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return view('legal.terms');
+})->name('terms');
+
+Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'store'])
+    ->middleware('throttle:5,1') // 5 contact forms per minute max
+    ->name('contact.store');
+
 // Routes that don't require email verification (dashboard, song creation)
 Route::middleware([
     'auth:sanctum',
