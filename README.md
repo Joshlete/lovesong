@@ -1,61 +1,279 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LoveSong 🎵
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A Laravel-based web application for creating and managing custom song requests. Users can submit detailed song specifications, make payments, and receive their personalized songs.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 🎼 Song Request Management
+- **Custom Song Creation**: Submit detailed song requests with specifications including:
+  - Recipient name and personal details
+  - Musical style and mood preferences
+  - Genre details and tempo specifications
+  - Vocal and instrumental requirements
+  - Song structure and inspiration notes
+  - Special instructions
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 💳 Payment Processing
+- **Stripe Integration**: Secure payment processing with Stripe
+- **Multiple Payment Methods**: Support for various payment options
+- **Payment Status Tracking**: Real-time payment status updates
+- **Download Protection**: Secure file delivery after payment completion
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 👤 User Management
+- **Authentication**: Laravel Jetstream with Sanctum
+- **Email Verification**: Required for payment processing
+- **User Profiles**: Track song request history and statistics
+- **Admin Panel**: Administrative interface for managing requests
 
-## Learning Laravel
+### 📁 File Management
+- **S3 Integration**: Secure file storage and delivery
+- **Download URLs**: Time-limited secure download links
+- **File Tracking**: Monitor file sizes and delivery status
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🎨 Modern UI/UX
+- **Livewire Components**: Dynamic, reactive user interface
+- **Tailwind CSS**: Modern, responsive design
+- **Mobile Optimized**: Responsive design for all devices
+- **Real-time Updates**: Live activity feeds and status updates
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Backend**: Laravel 12 (PHP 8.2+)
+- **Frontend**: Livewire 3, Tailwind CSS 3
+- **Authentication**: Laravel Jetstream with Sanctum
+- **Database**: MySQL/PostgreSQL/SQLite
+- **File Storage**: AWS S3
+- **Payment Processing**: Stripe
+- **Email**: Resend
+- **Development**: Laravel Sail, Vite
 
-## Laravel Sponsors
+## Prerequisites
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP 8.2 or higher
+- Composer
+- Node.js 18+ and npm
+- Docker (optional, for Laravel Sail)
 
-### Premium Partners
+## Installation
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd lovesong
+   ```
 
-## Contributing
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. **Install Node.js dependencies**
+   ```bash
+   npm install
+   ```
 
-## Code of Conduct
+4. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+5. **Configure your environment variables**
+   Edit `.env` file with your configuration:
+   ```env
+   APP_NAME="LoveSong"
+   APP_ENV=local
+   APP_DEBUG=true
+   APP_URL=http://localhost:8000
 
-## Security Vulnerabilities
+   # Database
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=lovesong
+   DB_USERNAME=root
+   DB_PASSWORD=
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   # AWS S3
+   AWS_ACCESS_KEY_ID=your_access_key
+   AWS_SECRET_ACCESS_KEY=your_secret_key
+   AWS_DEFAULT_REGION=us-east-1
+   AWS_BUCKET=your_bucket_name
+
+   # Stripe
+   STRIPE_KEY=your_stripe_publishable_key
+   STRIPE_SECRET=your_stripe_secret_key
+   STRIPE_WEBHOOK_SECRET=your_webhook_secret
+
+   # Resend (Email)
+   RESEND_API_KEY=your_resend_api_key
+   ```
+
+6. **Run database migrations**
+   ```bash
+   php artisan migrate
+   ```
+
+7. **Seed the database (optional)**
+   ```bash
+   php artisan db:seed
+   ```
+
+8. **Build frontend assets**
+   ```bash
+   npm run build
+   ```
+
+## Development
+
+### Starting the development server
+
+**Option 1: Using Laravel Sail (Docker)**
+```bash
+./vendor/bin/sail up
+```
+
+**Option 2: Using Laravel's built-in server**
+```bash
+php artisan serve
+```
+
+### Development workflow
+
+1. **Start all development services**
+   ```bash
+   composer run dev
+   ```
+   This command starts:
+   - Laravel development server
+   - Queue listener
+   - Log viewer (Pail)
+   - Vite development server
+
+2. **Run tests**
+   ```bash
+   php artisan test
+   ```
+
+3. **Code formatting**
+   ```bash
+   vendor/bin/pint
+   ```
+
+## Project Structure
+
+```
+lovesong/
+├── app/
+│   ├── Actions/           # Business logic actions
+│   ├── Constants/         # Application constants
+│   ├── Console/           # Artisan commands
+│   ├── Http/              # Controllers and middleware
+│   ├── Livewire/          # Livewire components
+│   │   └── Admin/         # Admin-specific components
+│   ├── Mail/              # Email templates
+│   ├── Models/            # Eloquent models
+│   ├── Providers/         # Service providers
+│   ├── Services/          # Business services
+│   ├── Traits/            # Reusable traits
+│   └── View/              # View components
+├── database/
+│   ├── factories/         # Model factories
+│   ├── migrations/        # Database migrations
+│   └── seeders/           # Database seeders
+├── resources/
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript files
+│   └── views/             # Blade templates
+├── routes/
+│   ├── web.php            # Web routes
+│   ├── api.php            # API routes
+│   └── console.php        # Console routes
+└── tests/                 # Application tests
+```
+
+## API Endpoints
+
+### Public Routes
+- `GET /` - Landing page
+- `GET /privacy` - Privacy policy
+- `GET /terms` - Terms of service
+- `GET /contact` - Contact page
+- `POST /contact` - Submit contact form
+
+### Authenticated Routes
+- `GET /dashboard` - User dashboard
+- `GET /song-requests` - List song requests
+- `POST /song-requests` - Create new song request
+- `GET /song-requests/{id}` - View song request
+- `PUT /song-requests/{id}` - Update song request
+- `DELETE /song-requests/{id}` - Delete song request
+- `GET /song-requests/{id}/download` - Download song file
+
+### Payment Routes (Email verified)
+- `GET /song-requests/{id}/payment` - Payment page
+- `POST /song-requests/{id}/payment-intent` - Create payment intent
+- `GET /song-requests/{id}/payment/success` - Payment success
+- `GET /song-requests/{id}/payment/cancel` - Payment cancellation
+
+### Admin Routes
+- `GET /admin/dashboard` - Admin dashboard
+- `GET /admin/song-requests` - Admin song requests list
+- `PATCH /admin/song-requests/{id}/status` - Update request status
+- `GET /admin/settings` - Admin settings
+
+## Testing
+
+The application includes comprehensive tests for all major functionality:
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test file
+php artisan test tests/Feature/SongRequestTest.php
+
+# Run tests with coverage
+php artisan test --coverage
+```
+
+## Deployment
+
+### Production Checklist
+
+1. **Environment Configuration**
+   - Set `APP_ENV=production`
+   - Set `APP_DEBUG=false`
+   - Configure production database
+   - Set up SSL certificates
+
+2. **Security**
+   - Generate application key: `php artisan key:generate`
+   - Set secure session configuration
+   - Configure proper file permissions
+
+3. **Performance**
+   - Run `php artisan config:cache`
+   - Run `php artisan route:cache`
+   - Run `php artisan view:cache`
+   - Build production assets: `npm run build`
+
+4. **Database**
+   - Run migrations: `php artisan migrate --force`
+   - Set up database backups
+
+5. **File Storage**
+   - Configure S3 bucket and permissions
+   - Set up CDN if needed
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support, email support@lovesong.com or create an issue in the repository.
+
+## Roadmap
+
+See [TODO.md](TODO.md) for current development priorities and planned features.
