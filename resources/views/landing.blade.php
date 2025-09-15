@@ -14,7 +14,7 @@
     
     <!-- Meta Tags for Social Sharing -->
     <meta property="og:title" content="Get Your Custom Song in 24 Hours 🎵">
-    <meta property="og:description" content="Professional musicians create YOUR song. Perfect for TikTok, gifts, or going viral!">
+    <meta property="og:description" content="Get YOUR custom song crafted with professional quality. Perfect for TikTok, gifts, or going viral!">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
 </head>

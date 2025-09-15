@@ -84,7 +84,7 @@
                     <p class="mb-6">We do not sell, trade, or otherwise transfer your personal information to third parties, except:</p>
                     <ul class="list-disc pl-6 mb-6 text-gray-700">
                         <li><strong>Service Providers:</strong> Trusted partners who help us operate our service (like payment processors)</li>
-                        <li><strong>Musicians:</strong> We share song requirements with our musicians to create your custom song</li>
+                        <li><strong>Song Creation:</strong> We use your song requirements to create your custom song</li>
                         <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
                     </ul>
 

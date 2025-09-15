@@ -44,7 +44,7 @@
 
             <!-- Footer -->
             <div class="text-center mt-8">
-                <p class="text-white/60 text-sm">&copy; {{ date('Y') }} LoveSong. Made with ❤️ by professional musicians.</p>
+                <p class="text-white/60 text-sm">&copy; {{ date('Y') }} LoveSong. Made with ❤️ for music enthusiasts.</p>
             </div>
         </div>
     </div>

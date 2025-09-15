@@ -16,8 +16,8 @@
                 <div class="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 text-3xl shadow-xl">
                     2️⃣
                 </div>
-                <h3 class="text-xl font-bold text-white mb-2">Musicians Work Magic</h3>
-                <p class="text-white/80">Professional artists create your completely unique song, just for you!</p>
+                <h3 class="text-xl font-bold text-white mb-2">We Craft Your Song</h3>
+                <p class="text-white/80">Our team creates your completely unique song with professional quality, just for you!</p>
             </div>
             <div class="text-center">
                 <div class="bg-white rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-4 text-3xl shadow-xl">

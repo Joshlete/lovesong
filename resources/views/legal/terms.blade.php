@@ -53,13 +53,13 @@
                 <div class="prose prose-lg max-w-none">
                     
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">🎵 Our Service</h2>
-                    <p class="mb-6">LoveSong provides custom song creation services where professional musicians create personalized songs based on your requirements. By using our service, you agree to these terms.</p>
+                    <p class="mb-6">LoveSong provides custom song creation services where we create personalized songs with professional quality based on your requirements. By using our service, you agree to these terms.</p>
 
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">📝 Song Requests</h2>
                     <p class="mb-6">When you submit a song request:</p>
                     <ul class="list-disc pl-6 mb-6 text-gray-700">
                         <li>You provide creative direction, lyrics ideas, and preferences</li>
-                        <li>Our musicians create an original song based on your requirements</li>
+                        <li>We create an original song based on your requirements</li>
                         <li>Typical delivery time is 24-48 hours after payment confirmation</li>
                         <li>You'll receive a high-quality digital audio file</li>
                         <li>One revision is included if needed within 7 days of delivery</li>

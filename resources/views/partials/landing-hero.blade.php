@@ -16,7 +16,7 @@
         </h1>
         
         <p class="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Professional musicians create YOUR custom song. Perfect for TikTok videos, surprise gifts, or just because! 
+            Get YOUR custom song crafted with professional quality. Perfect for TikTok videos, surprise gifts, or just because! 
         </p>
 
         <!-- Price with Scarcity -->

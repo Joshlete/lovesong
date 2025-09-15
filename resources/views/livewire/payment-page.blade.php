@@ -38,7 +38,7 @@
                         ${{ number_format($songRequest->price_usd, 2) }}
                         <span class="text-sm font-normal text-green-600">{{ $songRequest->currency }}</span>
                     </p>
-                    <p class="text-xs text-green-600 mt-2">Professional musicians • Full rights included</p>
+                    <p class="text-xs text-green-600 mt-2">Professional quality • Full rights included</p>
                 </div>
             </div>
         </div>
@@ -211,7 +211,7 @@
                         <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-pink-500 text-white rounded-full flex items-center justify-center font-bold mr-4">2</div>
                         <div>
                             <p class="font-semibold text-gray-900">Professional Creation</p>
-                            <p class="text-sm text-gray-600">Musicians compose & record your unique song</p>
+                            <p class="text-sm text-gray-600">We compose & record your unique song</p>
                         </div>
                     </div>
                     <div class="flex items-center">

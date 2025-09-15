@@ -32,7 +32,7 @@
                     Do I own the song completely?
                     <span class="text-purple-600 group-open:rotate-180 transition">▼</span>
                 </summary>
-                <p class="mt-4 text-gray-700">Absolutely! It's 100% yours forever. Professional musicians create a completely original song that belongs to you alone!</p>
+                <p class="mt-4 text-gray-700">Absolutely! It's 100% yours forever. We create a completely original song with professional quality that belongs to you alone!</p>
             </details>
         </div>
     </div>
