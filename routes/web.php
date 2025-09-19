@@ -31,6 +31,11 @@ Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'store'
     ->middleware('throttle:5,1') // 5 contact forms per minute max
     ->name('contact.store');
 
+// TikTok Pixel Test Page (admin only in production)
+Route::get('/test-tiktok', function () {
+    return view('test-tiktok');
+})->name('test-tiktok')->middleware(['auth', 'admin']);
+
 // Routes that don't require email verification (dashboard, song creation)
 Route::middleware([
     'auth:sanctum',

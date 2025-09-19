@@ -43,4 +43,8 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    'tiktok' => [
+        'pixel_id' => env('TIKTOK_PIXEL_ID'),
+    ],
+
 ];
